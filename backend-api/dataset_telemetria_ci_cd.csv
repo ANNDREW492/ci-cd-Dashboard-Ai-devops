@@ -1,0 +1,1201 @@
+commit_hash,actor,branch,commit_message,lines_changed,execution_time_seg,status
+8a430f2e,ANNDREW492,hotfix/urgente,Remove multi-tenant DB,221,89,success
+301a1993,ANNDREW492,main,Remove multi-tenant DB,347,72,failure
+949b2bf3,maria_backend,main,Update multi-tenant DB,178,91,success
+f0f44381,junior_juan,ci/cd-proyecto,Refactor Docker config,498,93,failure
+fb5fea11,carlos_dev,feature/pagos,Update frontend UI,496,119,failure
+23adf2c2,carlos_dev,ci/cd-proyecto,Update Docker config,351,105,success
+16f8f3b9,junior_juan,feature/pagos,Add Docker config,416,128,failure
+81d6584d,ANNDREW492,feature/pagos,Add API routes,42,57,success
+67bf94bb,maria_backend,main,Fix Docker config,154,20,success
+700d3789,ANNDREW492,feature/pagos,Refactor API routes,349,10,success
+18159c63,junior_juan,ci/cd-proyecto,Add frontend UI,164,74,success
+605714c8,ANNDREW492,main,Fix login,288,73,success
+32ce85b5,junior_juan,feature/pagos,Refactor login,450,91,failure
+d8daaee9,junior_juan,hotfix/urgente,Update frontend UI,222,23,success
+8628c180,ANNDREW492,ci/cd-proyecto,Remove frontend UI,291,62,success
+d250269c,ANNDREW492,hotfix/urgente,Add API routes,459,38,failure
+7befa195,junior_juan,feature/pagos,Fix frontend UI,67,100,success
+fd8491ed,ANNDREW492,ci/cd-proyecto,Refactor multi-tenant DB,266,84,success
+21fddaeb,carlos_dev,main,Update API routes,168,53,failure
+f573ac21,maria_backend,main,Update multi-tenant DB,232,25,success
+cee22255,junior_juan,ci/cd-proyecto,Add Docker config,53,47,success
+370a21f5,carlos_dev,ci/cd-proyecto,Fix Docker config,109,64,success
+b7e3b91c,maria_backend,hotfix/urgente,Update login,337,82,failure
+964d9763,ANNDREW492,ci/cd-proyecto,Update Docker config,254,56,success
+653045f4,carlos_dev,main,Refactor API routes,488,72,failure
+a9620719,ANNDREW492,ci/cd-proyecto,Update API routes,333,37,failure
+cb809822,ANNDREW492,feature/pagos,Update Docker config,306,101,failure
+9927a96a,junior_juan,hotfix/urgente,Refactor frontend UI,409,73,failure
+4343297e,ANNDREW492,ci/cd-proyecto,Add API routes,77,89,success
+5e2934f4,maria_backend,main,Add login,169,120,success
+8538e817,junior_juan,main,Update frontend UI,294,110,success
+b866fcb4,maria_backend,main,Refactor Docker config,102,17,success
+73d01f90,maria_backend,ci/cd-proyecto,Update Docker config,366,107,failure
+29773683,maria_backend,hotfix/urgente,Remove API routes,256,69,failure
+d8036696,ANNDREW492,hotfix/urgente,Refactor API routes,88,17,success
+a484edc1,maria_backend,ci/cd-proyecto,Add API routes,259,112,success
+d860edf8,junior_juan,feature/pagos,Update API routes,274,47,success
+57a2000c,maria_backend,ci/cd-proyecto,Refactor Docker config,71,33,success
+6dce6009,junior_juan,main,Add Docker config,354,48,failure
+0e77a4b5,junior_juan,hotfix/urgente,Add multi-tenant DB,313,83,failure
+50f92787,ANNDREW492,ci/cd-proyecto,Update API routes,389,115,failure
+2174b7e8,maria_backend,main,Remove Docker config,54,102,failure
+c896e6a0,ANNDREW492,ci/cd-proyecto,Remove login,189,49,success
+785734e9,junior_juan,hotfix/urgente,Fix Docker config,415,10,failure
+c323f725,junior_juan,hotfix/urgente,Fix frontend UI,285,82,success
+1f679382,maria_backend,hotfix/urgente,Fix login,495,121,failure
+202ff9b9,carlos_dev,main,Update API routes,88,100,success
+7a81eca0,carlos_dev,hotfix/urgente,Remove login,167,18,failure
+e8b5bcc3,ANNDREW492,hotfix/urgente,Fix login,406,45,failure
+9e3b7e12,junior_juan,feature/pagos,Fix multi-tenant DB,378,101,failure
+4edecf2b,carlos_dev,main,Remove API routes,282,39,success
+d01b9634,maria_backend,ci/cd-proyecto,Update Docker config,313,10,success
+e79bebd8,maria_backend,hotfix/urgente,Fix login,41,62,success
+11d83376,junior_juan,main,Fix login,169,30,success
+feece9e0,junior_juan,ci/cd-proyecto,Fix Docker config,75,47,success
+1c9a7e08,ANNDREW492,ci/cd-proyecto,Remove login,173,52,success
+4732a39a,junior_juan,hotfix/urgente,Add API routes,252,74,failure
+277c76eb,carlos_dev,hotfix/urgente,Fix API routes,174,82,success
+d70dd3f9,ANNDREW492,main,Refactor login,369,120,success
+49c23232,carlos_dev,main,Remove API routes,114,38,success
+d6e639f1,ANNDREW492,feature/pagos,Fix login,156,109,success
+53b20bb1,junior_juan,main,Add frontend UI,500,56,success
+41f8d8ec,carlos_dev,ci/cd-proyecto,Fix API routes,336,24,failure
+d63f5989,junior_juan,ci/cd-proyecto,Refactor Docker config,323,23,failure
+9e40fecb,ANNDREW492,feature/pagos,Remove Docker config,246,85,success
+03f832e0,maria_backend,feature/pagos,Fix multi-tenant DB,221,24,success
+0c3b6a51,ANNDREW492,feature/pagos,Remove frontend UI,405,66,failure
+51fbbaac,ANNDREW492,ci/cd-proyecto,Remove Docker config,22,96,success
+a7d6a7e7,ANNDREW492,feature/pagos,Remove login,157,35,success
+b5e71eee,ANNDREW492,main,Update frontend UI,58,62,success
+7d3f8603,maria_backend,hotfix/urgente,Refactor frontend UI,182,86,success
+59f8b625,junior_juan,feature/pagos,Refactor Docker config,154,126,success
+b818095e,maria_backend,ci/cd-proyecto,Update API routes,446,88,success
+814179df,carlos_dev,main,Refactor multi-tenant DB,91,100,success
+5744448d,junior_juan,main,Fix login,170,25,failure
+491edb07,ANNDREW492,feature/pagos,Fix API routes,234,74,success
+5813445f,maria_backend,main,Add multi-tenant DB,54,45,success
+54c6e6c8,maria_backend,hotfix/urgente,Remove multi-tenant DB,209,57,failure
+49d145f8,maria_backend,ci/cd-proyecto,Update frontend UI,191,112,success
+5981cf0d,ANNDREW492,feature/pagos,Fix Docker config,49,116,success
+f75d8b5a,junior_juan,hotfix/urgente,Update Docker config,155,15,failure
+3aac7b9b,ANNDREW492,ci/cd-proyecto,Refactor frontend UI,464,69,success
+04df2421,ANNDREW492,ci/cd-proyecto,Update Docker config,300,59,success
+621b2ff1,carlos_dev,ci/cd-proyecto,Add Docker config,416,122,failure
+bbb52a25,maria_backend,main,Update multi-tenant DB,386,117,failure
+6235ea67,junior_juan,hotfix/urgente,Update multi-tenant DB,250,75,success
+e7d86cd1,ANNDREW492,ci/cd-proyecto,Add frontend UI,307,55,success
+7c0d376a,junior_juan,main,Add multi-tenant DB,342,56,failure
+a34852b4,ANNDREW492,main,Refactor API routes,31,96,success
+7d3ae021,junior_juan,main,Fix login,482,15,failure
+a05ed08b,ANNDREW492,feature/pagos,Update multi-tenant DB,458,108,failure
+d4df9863,ANNDREW492,ci/cd-proyecto,Add Docker config,195,116,failure
+8b8a470a,ANNDREW492,main,Remove multi-tenant DB,399,65,failure
+dacebd59,ANNDREW492,feature/pagos,Fix multi-tenant DB,50,104,success
+fe5ce2ea,carlos_dev,main,Add frontend UI,169,85,success
+449cc524,ANNDREW492,ci/cd-proyecto,Fix login,29,21,success
+8e162426,maria_backend,ci/cd-proyecto,Update multi-tenant DB,208,69,success
+d1ce5ac7,junior_juan,feature/pagos,Remove frontend UI,389,96,failure
+5b306a3c,junior_juan,feature/pagos,Remove frontend UI,139,29,success
+deae937a,ANNDREW492,hotfix/urgente,Update login,213,123,success
+04a7803b,maria_backend,feature/pagos,Fix Docker config,434,33,failure
+d3e79238,junior_juan,hotfix/urgente,Add multi-tenant DB,179,25,success
+54632e7c,carlos_dev,feature/pagos,Remove frontend UI,126,28,success
+629cda1b,ANNDREW492,main,Remove login,187,101,success
+702d91ed,carlos_dev,ci/cd-proyecto,Refactor login,146,114,success
+0b5e5c9d,ANNDREW492,ci/cd-proyecto,Refactor multi-tenant DB,8,66,success
+2abe8d91,carlos_dev,main,Remove Docker config,374,51,success
+549c9c28,ANNDREW492,ci/cd-proyecto,Add API routes,81,53,success
+e74307b8,carlos_dev,ci/cd-proyecto,Remove Docker config,93,36,failure
+aae940d2,ANNDREW492,main,Remove login,305,128,failure
+824ac6c2,carlos_dev,ci/cd-proyecto,Fix frontend UI,220,116,failure
+92caf53e,maria_backend,main,Remove API routes,193,64,success
+7851bfba,ANNDREW492,hotfix/urgente,Refactor Docker config,2,116,failure
+c43ef25b,maria_backend,main,Refactor frontend UI,325,18,success
+22fc6dc5,junior_juan,main,Update Docker config,224,100,failure
+803edf07,carlos_dev,main,Remove multi-tenant DB,126,30,success
+dd9c6394,maria_backend,feature/pagos,Refactor API routes,499,10,failure
+e3a01948,junior_juan,hotfix/urgente,Add API routes,439,118,failure
+ce05574b,maria_backend,hotfix/urgente,Update Docker config,413,28,failure
+791b0241,ANNDREW492,feature/pagos,Refactor API routes,198,122,success
+b97fe0ed,maria_backend,hotfix/urgente,Remove API routes,164,111,failure
+6967dfd8,ANNDREW492,main,Refactor multi-tenant DB,296,88,success
+8a901e94,maria_backend,hotfix/urgente,Update login,151,22,success
+64417345,junior_juan,ci/cd-proyecto,Fix frontend UI,109,52,success
+652f4f29,carlos_dev,hotfix/urgente,Update login,392,110,failure
+76e6375a,maria_backend,main,Add frontend UI,155,65,success
+31eee4de,junior_juan,main,Remove multi-tenant DB,220,77,success
+c0c77c10,maria_backend,hotfix/urgente,Update multi-tenant DB,377,95,failure
+212c6493,junior_juan,hotfix/urgente,Update login,216,17,failure
+76fffaf0,maria_backend,main,Refactor login,85,79,success
+b157f2d7,maria_backend,ci/cd-proyecto,Refactor frontend UI,171,49,success
+1830b91a,ANNDREW492,hotfix/urgente,Update login,318,43,success
+8f27acb2,junior_juan,feature/pagos,Fix multi-tenant DB,214,116,failure
+c442b717,maria_backend,ci/cd-proyecto,Fix frontend UI,420,16,failure
+d134e4ff,ANNDREW492,hotfix/urgente,Update login,443,63,success
+f81e14be,maria_backend,hotfix/urgente,Update multi-tenant DB,181,107,success
+4d5eb266,junior_juan,feature/pagos,Remove frontend UI,483,11,failure
+8cb0ee40,junior_juan,feature/pagos,Refactor multi-tenant DB,73,127,success
+3f219de8,maria_backend,feature/pagos,Remove multi-tenant DB,431,48,success
+902630e7,ANNDREW492,main,Add multi-tenant DB,432,84,failure
+12812731,junior_juan,ci/cd-proyecto,Refactor multi-tenant DB,54,128,success
+77ab8c21,carlos_dev,feature/pagos,Add multi-tenant DB,483,45,failure
+945915e4,ANNDREW492,hotfix/urgente,Add multi-tenant DB,420,129,failure
+f7499c2b,maria_backend,feature/pagos,Fix multi-tenant DB,482,58,success
+7ef01580,ANNDREW492,main,Refactor multi-tenant DB,306,120,failure
+451a9795,junior_juan,hotfix/urgente,Update frontend UI,286,15,failure
+c0d6c6d6,junior_juan,main,Remove login,73,47,success
+1ad344cc,carlos_dev,feature/pagos,Update login,141,27,success
+31dc5b42,junior_juan,ci/cd-proyecto,Fix login,51,20,success
+f43c4464,carlos_dev,hotfix/urgente,Add Docker config,418,111,failure
+b5d4f978,carlos_dev,feature/pagos,Remove Docker config,73,34,success
+62734a78,carlos_dev,main,Add multi-tenant DB,99,112,success
+72d15c4b,junior_juan,ci/cd-proyecto,Add frontend UI,474,119,success
+af2a1422,ANNDREW492,ci/cd-proyecto,Refactor frontend UI,319,119,failure
+595104b5,carlos_dev,feature/pagos,Remove Docker config,451,38,failure
+e516e6c6,carlos_dev,main,Refactor API routes,430,107,failure
+c8bd0298,ANNDREW492,main,Fix login,21,110,success
+f698eabf,carlos_dev,main,Refactor frontend UI,25,52,success
+62c0ad17,junior_juan,feature/pagos,Update frontend UI,188,19,success
+38ab9b82,junior_juan,feature/pagos,Remove multi-tenant DB,211,129,failure
+ddd7c8e8,ANNDREW492,main,Update Docker config,200,110,success
+59de291d,maria_backend,ci/cd-proyecto,Fix frontend UI,479,77,failure
+d94f718e,maria_backend,main,Remove Docker config,419,21,failure
+ddb7fe8e,carlos_dev,feature/pagos,Refactor frontend UI,477,44,success
+798c58b3,carlos_dev,main,Add Docker config,105,10,success
+478037f9,junior_juan,feature/pagos,Remove multi-tenant DB,352,34,failure
+f3985b5c,junior_juan,ci/cd-proyecto,Update login,492,90,success
+0df2061b,ANNDREW492,hotfix/urgente,Fix API routes,294,87,success
+62b7c15d,maria_backend,main,Refactor frontend UI,6,48,success
+83167c7b,ANNDREW492,hotfix/urgente,Fix login,377,55,success
+15ee2dad,carlos_dev,main,Fix login,355,97,failure
+39a48a0d,carlos_dev,ci/cd-proyecto,Refactor API routes,111,61,success
+784ac475,junior_juan,main,Update frontend UI,414,89,success
+3ca12a3c,carlos_dev,hotfix/urgente,Remove Docker config,314,94,failure
+a0d861b4,maria_backend,main,Refactor Docker config,270,88,success
+e873e621,carlos_dev,feature/pagos,Remove Docker config,288,124,failure
+98de4238,junior_juan,hotfix/urgente,Remove Docker config,298,105,failure
+ee5e5494,maria_backend,feature/pagos,Fix multi-tenant DB,322,56,success
+1e1607f9,carlos_dev,main,Remove API routes,287,75,success
+578ffa68,maria_backend,ci/cd-proyecto,Fix Docker config,357,56,failure
+b2d75e67,junior_juan,feature/pagos,Update multi-tenant DB,409,39,success
+a2e4c5e4,maria_backend,main,Add multi-tenant DB,4,71,success
+5a0a7339,maria_backend,hotfix/urgente,Update Docker config,393,129,failure
+9f774c80,maria_backend,hotfix/urgente,Refactor multi-tenant DB,490,88,failure
+c495f05d,ANNDREW492,main,Remove multi-tenant DB,171,46,success
+3eab2183,junior_juan,main,Remove API routes,238,24,success
+6759eeb2,ANNDREW492,feature/pagos,Refactor API routes,82,33,failure
+b58ebec2,carlos_dev,hotfix/urgente,Remove frontend UI,406,111,failure
+75d3be18,ANNDREW492,main,Refactor Docker config,68,69,failure
+b02b0edf,maria_backend,ci/cd-proyecto,Update frontend UI,19,68,success
+97c901ae,carlos_dev,hotfix/urgente,Remove frontend UI,47,47,failure
+fda214a7,maria_backend,feature/pagos,Add Docker config,38,102,success
+73beb042,ANNDREW492,main,Fix frontend UI,26,10,success
+615afcb9,ANNDREW492,ci/cd-proyecto,Refactor Docker config,460,58,failure
+0999cfaf,maria_backend,feature/pagos,Refactor Docker config,20,30,success
+82136f50,maria_backend,main,Update login,196,47,success
+45e7ea32,carlos_dev,feature/pagos,Remove frontend UI,26,74,success
+921b83de,ANNDREW492,hotfix/urgente,Remove frontend UI,213,37,failure
+3192179c,carlos_dev,feature/pagos,Refactor API routes,406,128,failure
+ae3bc714,junior_juan,main,Fix frontend UI,107,78,success
+07cdb0b3,carlos_dev,main,Update Docker config,96,46,failure
+f76614a7,maria_backend,ci/cd-proyecto,Fix Docker config,369,48,success
+0d0e99b6,maria_backend,ci/cd-proyecto,Refactor frontend UI,259,82,success
+749f3647,carlos_dev,hotfix/urgente,Update API routes,231,15,failure
+f0fe8361,ANNDREW492,feature/pagos,Remove Docker config,206,88,success
+7c7357f0,junior_juan,feature/pagos,Add API routes,218,36,success
+6988d23f,maria_backend,ci/cd-proyecto,Fix multi-tenant DB,57,27,success
+e62547d4,carlos_dev,ci/cd-proyecto,Fix login,260,122,success
+01df6fda,maria_backend,main,Add login,25,100,success
+3157d604,maria_backend,feature/pagos,Add API routes,357,14,failure
+d09fca39,ANNDREW492,hotfix/urgente,Update Docker config,462,30,success
+0ff8237d,maria_backend,main,Fix Docker config,67,99,failure
+df1a632a,maria_backend,main,Update login,79,38,success
+11e666f7,ANNDREW492,feature/pagos,Refactor frontend UI,197,44,success
+c55c42e4,maria_backend,main,Add frontend UI,302,114,failure
+3a14bef4,ANNDREW492,ci/cd-proyecto,Add login,398,116,success
+f80f1fa3,carlos_dev,ci/cd-proyecto,Refactor frontend UI,470,96,success
+de68093a,carlos_dev,main,Fix login,181,62,success
+030d4c3d,ANNDREW492,hotfix/urgente,Update multi-tenant DB,112,113,success
+44503ea7,junior_juan,main,Fix Docker config,429,58,failure
+d1b2ca84,ANNDREW492,ci/cd-proyecto,Refactor Docker config,210,67,success
+a48f3620,maria_backend,feature/pagos,Update frontend UI,138,109,success
+b40ac29e,carlos_dev,hotfix/urgente,Add API routes,58,94,failure
+13f4ba32,junior_juan,hotfix/urgente,Add Docker config,302,127,failure
+7e0eac64,maria_backend,ci/cd-proyecto,Refactor Docker config,278,22,success
+c7d51fde,maria_backend,hotfix/urgente,Remove multi-tenant DB,394,94,failure
+05fd4d13,carlos_dev,hotfix/urgente,Remove Docker config,72,115,success
+fba97305,carlos_dev,hotfix/urgente,Refactor frontend UI,301,12,failure
+760f0423,ANNDREW492,hotfix/urgente,Refactor Docker config,149,71,success
+48fa9a41,junior_juan,hotfix/urgente,Refactor login,341,128,failure
+2b6fb001,ANNDREW492,feature/pagos,Add multi-tenant DB,97,34,success
+cd4ec78f,carlos_dev,ci/cd-proyecto,Refactor frontend UI,308,110,success
+9ec01dbd,ANNDREW492,hotfix/urgente,Refactor login,48,48,failure
+8ff45974,junior_juan,feature/pagos,Remove login,382,66,failure
+e905fda5,ANNDREW492,hotfix/urgente,Fix API routes,339,110,success
+3118efda,carlos_dev,main,Remove Docker config,64,96,success
+96c45466,carlos_dev,ci/cd-proyecto,Refactor API routes,362,18,success
+58418404,junior_juan,feature/pagos,Update Docker config,80,110,success
+9f0575c7,carlos_dev,main,Update login,227,47,success
+56f33def,carlos_dev,ci/cd-proyecto,Remove Docker config,492,105,failure
+a7e7ae7a,ANNDREW492,ci/cd-proyecto,Update API routes,125,83,failure
+1da71c89,ANNDREW492,feature/pagos,Fix login,26,24,success
+cae3a2e2,junior_juan,hotfix/urgente,Remove multi-tenant DB,73,31,failure
+bfb2ad53,carlos_dev,feature/pagos,Fix Docker config,179,30,success
+200b00fb,junior_juan,ci/cd-proyecto,Fix Docker config,467,82,success
+1fbd9d93,ANNDREW492,feature/pagos,Add Docker config,388,70,failure
+bc8d87c9,junior_juan,ci/cd-proyecto,Remove multi-tenant DB,249,97,success
+902136d3,junior_juan,feature/pagos,Update multi-tenant DB,390,60,failure
+dcff45d8,ANNDREW492,hotfix/urgente,Add login,397,76,failure
+42545835,maria_backend,ci/cd-proyecto,Refactor API routes,145,21,success
+d0a897df,junior_juan,ci/cd-proyecto,Fix multi-tenant DB,170,57,success
+dd2f9fda,junior_juan,feature/pagos,Remove Docker config,375,10,failure
+46ec38e7,junior_juan,feature/pagos,Refactor API routes,85,27,failure
+c227060f,junior_juan,hotfix/urgente,Remove multi-tenant DB,249,111,failure
+c8f6ee8d,ANNDREW492,main,Add multi-tenant DB,346,75,failure
+aaeaa6e0,ANNDREW492,hotfix/urgente,Remove Docker config,154,24,success
+77758e20,carlos_dev,hotfix/urgente,Add Docker config,387,21,failure
+a569540c,maria_backend,hotfix/urgente,Update frontend UI,169,124,failure
+1ad87cc4,junior_juan,feature/pagos,Refactor Docker config,235,108,success
+95c9cd2c,junior_juan,ci/cd-proyecto,Fix frontend UI,225,98,success
+dc01fa0b,junior_juan,main,Add frontend UI,189,85,success
+98fa8634,ANNDREW492,main,Add frontend UI,433,97,failure
+d67dbc55,carlos_dev,ci/cd-proyecto,Update multi-tenant DB,340,95,failure
+d689979d,maria_backend,main,Refactor multi-tenant DB,458,69,failure
+317241dd,junior_juan,hotfix/urgente,Refactor API routes,271,81,failure
+4b8ca76b,ANNDREW492,feature/pagos,Add API routes,440,31,success
+fe8b0e43,maria_backend,main,Update frontend UI,156,108,failure
+b3dfcb0e,junior_juan,ci/cd-proyecto,Refactor frontend UI,282,67,success
+c7884ba3,junior_juan,hotfix/urgente,Refactor frontend UI,144,109,success
+75eed120,junior_juan,hotfix/urgente,Remove Docker config,493,116,failure
+a539dcb6,carlos_dev,feature/pagos,Update frontend UI,426,86,failure
+146c7185,carlos_dev,feature/pagos,Update login,226,91,success
+bd3ff7eb,carlos_dev,ci/cd-proyecto,Refactor multi-tenant DB,293,56,success
+ebcdd034,ANNDREW492,ci/cd-proyecto,Remove login,27,66,success
+61acbb56,ANNDREW492,ci/cd-proyecto,Refactor login,355,28,success
+6dc52ccb,carlos_dev,ci/cd-proyecto,Fix API routes,432,34,failure
+250f0aa9,carlos_dev,hotfix/urgente,Refactor multi-tenant DB,464,47,failure
+bf46fa6b,carlos_dev,hotfix/urgente,Remove frontend UI,390,126,failure
+b04c9a4a,junior_juan,main,Update API routes,438,33,failure
+5b4c9dcc,carlos_dev,ci/cd-proyecto,Add multi-tenant DB,285,27,success
+97ddcf8e,maria_backend,main,Add frontend UI,408,76,success
+624cf01a,carlos_dev,main,Update login,373,59,failure
+2e12f3fc,junior_juan,ci/cd-proyecto,Add frontend UI,348,101,failure
+9157fea9,ANNDREW492,feature/pagos,Update multi-tenant DB,473,23,success
+d9a6a12d,junior_juan,ci/cd-proyecto,Update multi-tenant DB,285,103,success
+43bf55f8,ANNDREW492,main,Update frontend UI,215,29,success
+5d8fc10a,junior_juan,main,Remove frontend UI,339,84,failure
+ee0af228,junior_juan,ci/cd-proyecto,Fix Docker config,453,70,failure
+3937c8df,ANNDREW492,feature/pagos,Add API routes,121,84,success
+7334a0d1,junior_juan,main,Remove API routes,138,25,failure
+6724e3c7,ANNDREW492,feature/pagos,Fix login,439,55,success
+79bd698f,junior_juan,hotfix/urgente,Refactor frontend UI,46,120,failure
+baac87c4,ANNDREW492,ci/cd-proyecto,Update multi-tenant DB,33,83,success
+4d509b0d,carlos_dev,feature/pagos,Fix API routes,154,29,success
+c9ade04c,maria_backend,ci/cd-proyecto,Fix API routes,24,53,success
+0cced037,maria_backend,hotfix/urgente,Update API routes,50,117,success
+e34519b0,maria_backend,ci/cd-proyecto,Add Docker config,52,77,success
+0b025467,ANNDREW492,hotfix/urgente,Update Docker config,37,99,success
+fe3913e9,junior_juan,hotfix/urgente,Add multi-tenant DB,272,34,failure
+2854c8bc,maria_backend,main,Fix multi-tenant DB,327,46,failure
+e70fcf98,junior_juan,feature/pagos,Add login,391,120,success
+80ab6675,ANNDREW492,hotfix/urgente,Update API routes,464,81,failure
+a1a694d9,carlos_dev,ci/cd-proyecto,Update API routes,63,53,success
+3ea80a6c,carlos_dev,feature/pagos,Add login,415,123,success
+eb92a1ed,carlos_dev,hotfix/urgente,Refactor Docker config,252,15,failure
+2200ba5e,maria_backend,ci/cd-proyecto,Add login,216,108,success
+2c34e5f0,junior_juan,main,Refactor multi-tenant DB,346,103,failure
+ca5aba2a,maria_backend,main,Update multi-tenant DB,89,21,success
+5b9da1ae,maria_backend,ci/cd-proyecto,Update Docker config,178,16,success
+32558204,ANNDREW492,ci/cd-proyecto,Remove Docker config,223,121,success
+f98e29c1,junior_juan,main,Remove frontend UI,220,16,failure
+0b36be95,maria_backend,main,Refactor Docker config,262,64,success
+65c30426,ANNDREW492,feature/pagos,Add multi-tenant DB,439,75,success
+370e9b51,junior_juan,feature/pagos,Add multi-tenant DB,89,111,failure
+9101d146,junior_juan,feature/pagos,Remove login,440,126,success
+21d38999,ANNDREW492,ci/cd-proyecto,Fix Docker config,3,56,success
+b49899de,junior_juan,hotfix/urgente,Add Docker config,178,29,failure
+d75c109c,ANNDREW492,hotfix/urgente,Fix API routes,217,78,failure
+5c8be7ff,ANNDREW492,ci/cd-proyecto,Add frontend UI,39,47,success
+35763316,ANNDREW492,main,Remove login,183,118,success
+57ab166d,junior_juan,feature/pagos,Update multi-tenant DB,40,22,success
+3140f27a,ANNDREW492,feature/pagos,Fix API routes,272,91,success
+c3127093,carlos_dev,ci/cd-proyecto,Fix frontend UI,196,20,success
+5ec35f78,maria_backend,main,Update frontend UI,269,126,success
+20977424,ANNDREW492,feature/pagos,Add Docker config,105,85,success
+68b68134,junior_juan,ci/cd-proyecto,Fix login,193,44,success
+bcb2212b,maria_backend,hotfix/urgente,Remove login,474,114,success
+d3abf67f,maria_backend,main,Refactor login,110,44,success
+c9163ce9,carlos_dev,ci/cd-proyecto,Update multi-tenant DB,430,43,success
+110c1deb,carlos_dev,ci/cd-proyecto,Fix multi-tenant DB,487,36,success
+47ba83cf,ANNDREW492,ci/cd-proyecto,Add frontend UI,225,83,success
+201cfded,ANNDREW492,main,Add multi-tenant DB,459,69,success
+59ff6b08,junior_juan,feature/pagos,Add API routes,338,61,failure
+04b5d3b0,carlos_dev,feature/pagos,Add multi-tenant DB,10,40,success
+0bfe1658,maria_backend,feature/pagos,Refactor API routes,72,71,success
+7bfa80db,ANNDREW492,ci/cd-proyecto,Fix multi-tenant DB,468,125,success
+52b61fd6,ANNDREW492,ci/cd-proyecto,Refactor login,480,25,success
+bd11c56d,carlos_dev,ci/cd-proyecto,Remove frontend UI,332,106,success
+3f5ecca5,ANNDREW492,hotfix/urgente,Remove Docker config,203,98,success
+6a091a54,carlos_dev,main,Update frontend UI,150,100,success
+0e4a583b,maria_backend,ci/cd-proyecto,Refactor API routes,136,110,success
+13582e0b,maria_backend,main,Refactor multi-tenant DB,222,111,success
+d4b15e19,ANNDREW492,feature/pagos,Add multi-tenant DB,275,92,success
+5046a672,carlos_dev,main,Update Docker config,390,121,success
+89c1ed6b,carlos_dev,hotfix/urgente,Update frontend UI,70,35,failure
+42786a41,maria_backend,hotfix/urgente,Remove multi-tenant DB,212,29,failure
+50466ba4,ANNDREW492,main,Update login,74,67,success
+4f055921,maria_backend,main,Update frontend UI,446,123,failure
+306dcf29,maria_backend,feature/pagos,Fix login,168,25,success
+f04940ae,junior_juan,ci/cd-proyecto,Update login,169,21,success
+ca0c5285,maria_backend,feature/pagos,Remove Docker config,229,60,success
+9b1e85ee,carlos_dev,hotfix/urgente,Remove API routes,121,118,success
+c480e2e3,ANNDREW492,feature/pagos,Fix frontend UI,308,13,success
+b23b6193,ANNDREW492,feature/pagos,Remove API routes,74,87,success
+fdb9f0b0,maria_backend,ci/cd-proyecto,Add frontend UI,159,30,success
+108d9469,ANNDREW492,ci/cd-proyecto,Update multi-tenant DB,351,105,success
+e2074706,ANNDREW492,ci/cd-proyecto,Refactor Docker config,350,118,success
+10be0bc8,junior_juan,hotfix/urgente,Refactor frontend UI,292,74,failure
+a78867c7,junior_juan,hotfix/urgente,Add API routes,480,84,failure
+17a41852,ANNDREW492,ci/cd-proyecto,Fix login,450,61,failure
+aca2f88a,ANNDREW492,hotfix/urgente,Remove frontend UI,89,111,failure
+024a50db,carlos_dev,main,Fix multi-tenant DB,365,68,failure
+2609824b,carlos_dev,feature/pagos,Update Docker config,288,99,success
+6da332a0,junior_juan,feature/pagos,Remove frontend UI,263,55,success
+f70b3d52,ANNDREW492,hotfix/urgente,Add multi-tenant DB,168,42,failure
+3e5151fe,carlos_dev,main,Add multi-tenant DB,476,110,failure
+226dda06,carlos_dev,ci/cd-proyecto,Refactor login,27,72,success
+1fa3860f,carlos_dev,hotfix/urgente,Refactor API routes,448,119,success
+d1e7c56a,junior_juan,ci/cd-proyecto,Fix frontend UI,60,78,success
+83d82ad5,ANNDREW492,ci/cd-proyecto,Fix multi-tenant DB,144,65,success
+c7b922e9,ANNDREW492,hotfix/urgente,Remove frontend UI,229,55,success
+4ab2b9d1,carlos_dev,ci/cd-proyecto,Remove login,234,123,success
+75ffd67d,carlos_dev,main,Remove login,300,28,success
+7716f77e,ANNDREW492,main,Remove multi-tenant DB,317,31,success
+3515fb88,carlos_dev,feature/pagos,Remove Docker config,282,94,success
+ddf6ac81,maria_backend,hotfix/urgente,Remove Docker config,23,116,success
+9fc52117,maria_backend,hotfix/urgente,Remove API routes,235,75,success
+425294b7,carlos_dev,main,Update API routes,35,94,success
+2d6a3790,carlos_dev,ci/cd-proyecto,Add API routes,219,105,success
+690812b5,carlos_dev,ci/cd-proyecto,Add API routes,263,87,success
+54c60147,junior_juan,feature/pagos,Update login,376,23,success
+5f9f5b78,carlos_dev,hotfix/urgente,Add multi-tenant DB,285,48,success
+dc2d7674,ANNDREW492,main,Refactor multi-tenant DB,482,120,failure
+7613040d,carlos_dev,hotfix/urgente,Add login,6,82,success
+4b795033,maria_backend,feature/pagos,Add multi-tenant DB,367,86,success
+6d8bc7c6,ANNDREW492,main,Fix frontend UI,288,105,success
+56f17d4f,maria_backend,main,Fix Docker config,127,109,success
+7606afcc,junior_juan,hotfix/urgente,Refactor API routes,232,68,success
+839c40e1,maria_backend,main,Refactor multi-tenant DB,319,56,success
+4b7a2fce,maria_backend,ci/cd-proyecto,Fix frontend UI,162,119,success
+e74a056d,junior_juan,hotfix/urgente,Update API routes,148,36,failure
+495b5473,maria_backend,feature/pagos,Refactor API routes,103,12,success
+ccf602e6,ANNDREW492,feature/pagos,Remove API routes,16,110,success
+20236b29,maria_backend,hotfix/urgente,Refactor frontend UI,272,88,failure
+afa380e1,maria_backend,main,Add Docker config,472,103,failure
+dd7f30ec,junior_juan,hotfix/urgente,Update frontend UI,151,47,success
+4b946536,ANNDREW492,feature/pagos,Refactor frontend UI,94,93,success
+88eff202,ANNDREW492,hotfix/urgente,Remove API routes,35,92,failure
+c2b0e9c7,carlos_dev,hotfix/urgente,Refactor login,218,24,failure
+de4ab2de,carlos_dev,feature/pagos,Fix Docker config,137,12,success
+984f26ac,maria_backend,hotfix/urgente,Add login,132,98,success
+0d0f5da3,junior_juan,feature/pagos,Update multi-tenant DB,147,85,success
+6825d5b2,ANNDREW492,main,Refactor login,135,84,success
+bd4536de,maria_backend,main,Refactor API routes,344,29,success
+8c196214,ANNDREW492,ci/cd-proyecto,Add multi-tenant DB,393,71,failure
+adf0e114,ANNDREW492,main,Refactor multi-tenant DB,149,87,success
+2cbabcea,ANNDREW492,main,Add login,295,61,success
+3a8d9f4e,maria_backend,hotfix/urgente,Remove API routes,177,64,success
+8dc123dd,ANNDREW492,ci/cd-proyecto,Remove Docker config,377,63,failure
+5c5d4b61,ANNDREW492,main,Update Docker config,350,11,success
+ac6d6fb2,ANNDREW492,feature/pagos,Refactor multi-tenant DB,37,65,failure
+443b9f66,ANNDREW492,hotfix/urgente,Update Docker config,390,55,failure
+e03b3d35,ANNDREW492,feature/pagos,Update API routes,32,59,failure
+0d3a5774,maria_backend,feature/pagos,Fix API routes,52,110,success
+05899a93,maria_backend,feature/pagos,Refactor frontend UI,463,80,success
+f4a02450,carlos_dev,ci/cd-proyecto,Refactor Docker config,47,105,failure
+d50d456c,carlos_dev,hotfix/urgente,Add login,163,82,success
+183888d1,carlos_dev,main,Remove API routes,343,22,failure
+26ad6782,carlos_dev,ci/cd-proyecto,Add API routes,116,79,success
+9fdb8b7d,maria_backend,ci/cd-proyecto,Fix multi-tenant DB,11,99,success
+887066ad,ANNDREW492,ci/cd-proyecto,Remove API routes,123,17,success
+0c0951e1,junior_juan,hotfix/urgente,Update multi-tenant DB,240,126,failure
+ce80c7b5,junior_juan,hotfix/urgente,Add login,255,127,success
+aca95234,junior_juan,main,Add API routes,337,76,failure
+c9c7440c,ANNDREW492,hotfix/urgente,Add login,214,24,success
+b6bf2923,junior_juan,main,Refactor login,206,124,success
+603fc375,maria_backend,ci/cd-proyecto,Add multi-tenant DB,416,103,failure
+f97cfcdd,maria_backend,hotfix/urgente,Fix Docker config,433,111,failure
+2a693a3e,carlos_dev,ci/cd-proyecto,Add Docker config,228,75,success
+45fb8445,carlos_dev,feature/pagos,Fix frontend UI,438,79,success
+79f02a2a,carlos_dev,ci/cd-proyecto,Remove frontend UI,460,73,success
+b9afb4e5,carlos_dev,ci/cd-proyecto,Add multi-tenant DB,339,79,failure
+8977ef17,carlos_dev,feature/pagos,Remove frontend UI,300,67,success
+7b7357f8,maria_backend,feature/pagos,Update login,460,40,success
+b04ef4f3,ANNDREW492,feature/pagos,Fix login,194,16,success
+360f452c,carlos_dev,ci/cd-proyecto,Remove multi-tenant DB,102,48,success
+6bb4191c,ANNDREW492,ci/cd-proyecto,Add login,28,115,failure
+d2b04968,carlos_dev,feature/pagos,Remove multi-tenant DB,196,98,success
+e176fc1f,carlos_dev,main,Fix API routes,361,78,failure
+de6c78d3,maria_backend,feature/pagos,Refactor frontend UI,153,111,success
+de9e568d,carlos_dev,main,Refactor login,109,38,success
+5f0d72a9,ANNDREW492,hotfix/urgente,Update multi-tenant DB,430,115,success
+3111ca50,maria_backend,feature/pagos,Update frontend UI,58,94,success
+9c523fb9,junior_juan,hotfix/urgente,Add API routes,163,37,failure
+6abc3615,ANNDREW492,main,Fix API routes,355,72,success
+29abdd97,maria_backend,hotfix/urgente,Remove login,158,37,success
+0934ae4e,maria_backend,hotfix/urgente,Fix login,317,114,success
+08f90803,junior_juan,ci/cd-proyecto,Fix API routes,62,110,success
+43e70f5c,ANNDREW492,main,Refactor frontend UI,109,73,success
+154d8a4c,carlos_dev,ci/cd-proyecto,Add Docker config,59,69,success
+434b422c,carlos_dev,feature/pagos,Add frontend UI,239,89,success
+d6dd516d,ANNDREW492,main,Fix login,25,84,success
+9aeca01a,ANNDREW492,ci/cd-proyecto,Refactor frontend UI,424,98,failure
+5459a150,maria_backend,main,Fix Docker config,3,98,success
+1b1ddc99,maria_backend,hotfix/urgente,Refactor Docker config,242,47,failure
+b727d49a,junior_juan,main,Remove multi-tenant DB,475,110,failure
+a1d754e4,junior_juan,ci/cd-proyecto,Remove login,463,38,success
+eeea6ebc,carlos_dev,hotfix/urgente,Remove Docker config,231,25,success
+7424e09c,maria_backend,ci/cd-proyecto,Add API routes,369,121,success
+bb479c60,ANNDREW492,hotfix/urgente,Add login,149,22,success
+ffac22d6,junior_juan,hotfix/urgente,Add login,91,35,success
+afefcc4d,ANNDREW492,hotfix/urgente,Refactor login,371,60,success
+932a2a44,junior_juan,main,Refactor multi-tenant DB,76,73,failure
+955831ac,carlos_dev,ci/cd-proyecto,Add Docker config,137,105,success
+c2fc82fb,maria_backend,hotfix/urgente,Remove frontend UI,218,80,failure
+6d40f6e8,carlos_dev,feature/pagos,Update Docker config,152,79,success
+4bd7ab33,maria_backend,hotfix/urgente,Remove API routes,457,45,failure
+86d8f31a,ANNDREW492,ci/cd-proyecto,Add multi-tenant DB,297,124,success
+3db5ad19,junior_juan,feature/pagos,Add API routes,445,95,failure
+45b01339,ANNDREW492,hotfix/urgente,Remove Docker config,275,121,failure
+6184190c,junior_juan,hotfix/urgente,Refactor login,271,95,failure
+6711aa57,ANNDREW492,feature/pagos,Fix API routes,484,128,success
+e502e123,ANNDREW492,feature/pagos,Refactor API routes,41,74,success
+b1ff522a,carlos_dev,main,Remove API routes,97,64,success
+53bb4b14,ANNDREW492,main,Refactor login,103,128,success
+6fe60353,carlos_dev,hotfix/urgente,Update Docker config,2,34,success
+64a55802,maria_backend,feature/pagos,Refactor frontend UI,79,110,success
+0611f2b9,maria_backend,hotfix/urgente,Update API routes,358,10,failure
+24a751d5,carlos_dev,main,Add API routes,84,114,failure
+76361593,junior_juan,ci/cd-proyecto,Update API routes,454,73,failure
+4a24593d,junior_juan,feature/pagos,Add API routes,264,40,success
+e281cb3e,maria_backend,feature/pagos,Add frontend UI,79,47,success
+4a2727a0,junior_juan,hotfix/urgente,Add frontend UI,302,84,failure
+389977c6,carlos_dev,main,Fix API routes,100,58,success
+e0bff49c,carlos_dev,main,Fix login,124,39,success
+f822b004,ANNDREW492,feature/pagos,Refactor login,435,32,success
+be16f031,carlos_dev,main,Update API routes,39,123,success
+7d7c0a00,ANNDREW492,hotfix/urgente,Fix Docker config,249,80,success
+11bd4b48,ANNDREW492,main,Fix API routes,295,57,success
+1c6415e9,ANNDREW492,main,Add multi-tenant DB,310,123,failure
+c977ee0d,junior_juan,hotfix/urgente,Add login,457,56,failure
+e9ff175f,carlos_dev,ci/cd-proyecto,Refactor Docker config,44,104,success
+138bd869,carlos_dev,hotfix/urgente,Remove Docker config,265,80,success
+d3cd8693,ANNDREW492,main,Fix login,452,13,success
+82d722a3,maria_backend,hotfix/urgente,Fix multi-tenant DB,261,120,failure
+e74a241b,carlos_dev,main,Refactor login,133,60,success
+3fb1a390,ANNDREW492,ci/cd-proyecto,Update login,431,52,success
+484fe48a,junior_juan,hotfix/urgente,Fix multi-tenant DB,421,94,failure
+61109018,junior_juan,main,Fix API routes,380,23,failure
+f57b704d,junior_juan,ci/cd-proyecto,Add frontend UI,437,117,failure
+2df49c10,ANNDREW492,hotfix/urgente,Fix frontend UI,27,96,success
+feed4181,maria_backend,ci/cd-proyecto,Update Docker config,188,19,success
+839039b3,junior_juan,ci/cd-proyecto,Add frontend UI,380,18,failure
+4a6b2aa7,carlos_dev,ci/cd-proyecto,Update Docker config,333,59,failure
+41a32c42,junior_juan,main,Add login,151,103,success
+c59d4eb4,junior_juan,feature/pagos,Add login,396,123,failure
+189aed64,maria_backend,main,Fix API routes,120,113,success
+a12eb8ce,ANNDREW492,ci/cd-proyecto,Remove API routes,155,23,success
+8cc18172,ANNDREW492,hotfix/urgente,Add API routes,191,123,success
+bbbcc9de,junior_juan,feature/pagos,Refactor frontend UI,26,67,failure
+1e4cd9fb,carlos_dev,hotfix/urgente,Refactor API routes,336,58,failure
+03a4d5e5,junior_juan,ci/cd-proyecto,Fix login,388,11,success
+24094444,ANNDREW492,main,Fix multi-tenant DB,404,20,failure
+0b2aacc3,carlos_dev,main,Add Docker config,434,58,failure
+d5265ffe,junior_juan,hotfix/urgente,Refactor frontend UI,257,81,success
+5dadc592,junior_juan,main,Update login,68,80,failure
+d365cf33,junior_juan,ci/cd-proyecto,Fix Docker config,256,57,failure
+7bc4e30e,maria_backend,feature/pagos,Update API routes,79,45,success
+1e98246b,junior_juan,feature/pagos,Fix Docker config,259,104,success
+410ebe6f,junior_juan,hotfix/urgente,Fix Docker config,342,43,failure
+b7433bff,maria_backend,main,Fix frontend UI,157,97,success
+997ef4d5,junior_juan,feature/pagos,Fix frontend UI,204,14,success
+ec0c05c2,carlos_dev,hotfix/urgente,Update multi-tenant DB,48,46,failure
+ffa5d10f,ANNDREW492,ci/cd-proyecto,Add login,267,11,success
+0c3babdd,junior_juan,hotfix/urgente,Add frontend UI,302,63,failure
+3c6f5eaf,junior_juan,ci/cd-proyecto,Add API routes,437,44,failure
+f86963c9,maria_backend,main,Update login,350,16,failure
+8f27e696,ANNDREW492,hotfix/urgente,Fix API routes,149,52,success
+6426c55d,maria_backend,hotfix/urgente,Remove login,498,126,failure
+b852fdb6,junior_juan,feature/pagos,Fix login,199,121,success
+f3dd3a79,carlos_dev,feature/pagos,Refactor login,370,41,success
+964db75c,junior_juan,ci/cd-proyecto,Add login,213,103,success
+54ebf7bb,junior_juan,feature/pagos,Remove frontend UI,205,39,success
+efd159d3,ANNDREW492,hotfix/urgente,Update API routes,14,11,failure
+9875fc28,ANNDREW492,hotfix/urgente,Add login,50,97,failure
+e4a21f9a,maria_backend,feature/pagos,Refactor frontend UI,445,90,success
+629e6c6c,carlos_dev,hotfix/urgente,Update Docker config,349,68,failure
+9fdf6517,junior_juan,hotfix/urgente,Update frontend UI,461,111,failure
+b8c59a2a,junior_juan,hotfix/urgente,Add Docker config,360,118,failure
+de2cc98e,carlos_dev,ci/cd-proyecto,Remove login,486,118,success
+47670800,junior_juan,main,Fix frontend UI,408,33,failure
+4e832e1a,ANNDREW492,hotfix/urgente,Add API routes,334,12,failure
+979f804f,ANNDREW492,main,Update Docker config,40,26,success
+3abbdf82,junior_juan,feature/pagos,Remove frontend UI,103,77,success
+952266c5,junior_juan,feature/pagos,Update API routes,478,82,failure
+54058d1b,ANNDREW492,feature/pagos,Update multi-tenant DB,93,18,success
+f6b5720a,carlos_dev,feature/pagos,Add Docker config,234,124,failure
+719ac1fa,ANNDREW492,hotfix/urgente,Fix frontend UI,315,13,failure
+41079c11,junior_juan,hotfix/urgente,Update API routes,243,90,success
+91f81c65,junior_juan,feature/pagos,Update login,356,14,failure
+3a7d0857,carlos_dev,hotfix/urgente,Remove login,217,49,failure
+af7bf3b4,maria_backend,ci/cd-proyecto,Add API routes,174,96,success
+3fa0835a,carlos_dev,hotfix/urgente,Remove API routes,415,43,success
+56551336,junior_juan,main,Fix Docker config,281,12,success
+b6d65d65,carlos_dev,main,Fix login,451,103,success
+b236c394,ANNDREW492,feature/pagos,Update login,166,82,success
+28fa4740,maria_backend,hotfix/urgente,Refactor login,448,86,failure
+d23c156c,carlos_dev,hotfix/urgente,Refactor API routes,22,103,success
+32e65531,junior_juan,hotfix/urgente,Update multi-tenant DB,152,82,failure
+56b30ef7,ANNDREW492,feature/pagos,Remove login,432,54,failure
+edb5b44b,ANNDREW492,ci/cd-proyecto,Add API routes,275,65,success
+29431b4a,junior_juan,hotfix/urgente,Add multi-tenant DB,347,40,failure
+bc2e7ad3,ANNDREW492,hotfix/urgente,Remove login,360,113,failure
+ac0afe17,maria_backend,main,Update login,269,48,success
+0924125c,junior_juan,main,Refactor frontend UI,336,83,success
+6c5f8793,maria_backend,feature/pagos,Refactor Docker config,241,42,success
+f274ace7,junior_juan,main,Add Docker config,345,23,failure
+1c119159,junior_juan,ci/cd-proyecto,Remove login,383,53,success
+70f3b223,carlos_dev,main,Fix Docker config,86,67,success
+3e79c08c,junior_juan,hotfix/urgente,Update API routes,496,36,failure
+df6e1dfa,junior_juan,main,Add API routes,129,60,failure
+49bdfdb9,junior_juan,feature/pagos,Update frontend UI,133,64,success
+24dfb85b,ANNDREW492,ci/cd-proyecto,Refactor multi-tenant DB,135,49,success
+c0e94cfc,carlos_dev,hotfix/urgente,Fix Docker config,359,49,success
+89fe19b7,junior_juan,ci/cd-proyecto,Update login,211,125,success
+9067abb6,junior_juan,main,Update multi-tenant DB,245,114,success
+6b7a884e,carlos_dev,feature/pagos,Add API routes,146,36,success
+6026db32,maria_backend,ci/cd-proyecto,Fix API routes,13,31,success
+82e8dd6a,carlos_dev,hotfix/urgente,Update Docker config,451,45,failure
+c7d1e838,carlos_dev,ci/cd-proyecto,Refactor Docker config,482,10,success
+bd0a6430,maria_backend,main,Update frontend UI,27,20,success
+87083e2d,ANNDREW492,main,Refactor multi-tenant DB,213,71,failure
+9df1fe07,maria_backend,ci/cd-proyecto,Remove login,321,43,success
+ce015aaa,maria_backend,ci/cd-proyecto,Add multi-tenant DB,380,77,failure
+727b8130,ANNDREW492,main,Add login,46,119,failure
+55c03ef5,carlos_dev,main,Fix API routes,188,92,success
+55b4326f,ANNDREW492,hotfix/urgente,Refactor frontend UI,245,73,success
+78db0805,carlos_dev,hotfix/urgente,Refactor frontend UI,288,45,failure
+47862152,maria_backend,main,Update API routes,330,119,failure
+5c2146b8,ANNDREW492,ci/cd-proyecto,Update API routes,331,121,success
+ba6e4a0f,junior_juan,main,Add Docker config,393,51,success
+aa02b318,junior_juan,ci/cd-proyecto,Add multi-tenant DB,143,56,failure
+1a3a89ce,ANNDREW492,main,Refactor Docker config,138,80,success
+dfe20075,junior_juan,hotfix/urgente,Refactor Docker config,102,88,failure
+19754b40,maria_backend,ci/cd-proyecto,Add API routes,207,67,success
+ef4cf6a5,junior_juan,main,Add API routes,89,65,success
+fabe900e,maria_backend,main,Update login,307,26,success
+4ba10d67,junior_juan,main,Fix login,461,123,failure
+a9edc56b,carlos_dev,ci/cd-proyecto,Refactor login,274,126,success
+c6198cdc,junior_juan,hotfix/urgente,Refactor Docker config,146,91,failure
+29745574,maria_backend,main,Update Docker config,204,29,success
+820585fa,ANNDREW492,feature/pagos,Add Docker config,404,20,failure
+7471f3d7,junior_juan,ci/cd-proyecto,Update Docker config,308,100,failure
+9b030624,carlos_dev,hotfix/urgente,Add API routes,405,111,failure
+a1e08dde,junior_juan,hotfix/urgente,Fix multi-tenant DB,485,17,failure
+a5f49477,carlos_dev,feature/pagos,Fix multi-tenant DB,291,36,success
+ac0376e6,ANNDREW492,feature/pagos,Remove multi-tenant DB,39,120,success
+e95f64fa,junior_juan,feature/pagos,Remove multi-tenant DB,121,106,success
+082f1a79,ANNDREW492,feature/pagos,Refactor login,129,13,success
+b2ca4db5,carlos_dev,hotfix/urgente,Remove login,28,87,success
+5007e5f2,maria_backend,ci/cd-proyecto,Add Docker config,216,70,success
+ac49f0c7,ANNDREW492,main,Remove login,336,28,success
+0faef6db,junior_juan,feature/pagos,Update multi-tenant DB,96,60,failure
+70d87df4,ANNDREW492,main,Fix login,129,88,success
+a38950f6,carlos_dev,ci/cd-proyecto,Refactor multi-tenant DB,391,82,failure
+872c52ff,maria_backend,main,Remove multi-tenant DB,399,79,failure
+5c928cf4,carlos_dev,main,Fix API routes,21,123,success
+8f1c202b,junior_juan,hotfix/urgente,Refactor API routes,313,67,failure
+332e16e0,ANNDREW492,feature/pagos,Remove frontend UI,241,27,success
+c5bb7bff,junior_juan,hotfix/urgente,Remove API routes,470,103,failure
+a22b9017,maria_backend,feature/pagos,Refactor multi-tenant DB,266,94,success
+fd55407d,carlos_dev,main,Fix frontend UI,457,71,failure
+accdc0bb,junior_juan,ci/cd-proyecto,Refactor login,18,69,success
+e23b2e05,maria_backend,feature/pagos,Update multi-tenant DB,307,82,failure
+3b204232,junior_juan,feature/pagos,Refactor Docker config,418,119,success
+f8d37c1d,ANNDREW492,main,Update API routes,457,50,success
+0b90efba,maria_backend,feature/pagos,Remove multi-tenant DB,338,92,failure
+f7b08c03,junior_juan,main,Refactor frontend UI,94,115,failure
+037d7a50,carlos_dev,main,Update API routes,171,36,failure
+2b5000f9,junior_juan,hotfix/urgente,Fix API routes,435,36,failure
+2ea0df62,carlos_dev,main,Add multi-tenant DB,44,97,success
+bf311817,maria_backend,ci/cd-proyecto,Refactor multi-tenant DB,70,72,success
+10cf4c88,ANNDREW492,feature/pagos,Fix frontend UI,324,110,success
+0f1ab0ce,junior_juan,hotfix/urgente,Fix API routes,435,100,failure
+6cc35bb8,maria_backend,hotfix/urgente,Fix API routes,69,110,failure
+95495e99,carlos_dev,ci/cd-proyecto,Update Docker config,333,129,failure
+7d25c9b0,junior_juan,main,Refactor frontend UI,313,110,failure
+49466d6c,maria_backend,hotfix/urgente,Add API routes,1,23,success
+16d6481b,carlos_dev,feature/pagos,Refactor API routes,369,65,failure
+838ab092,maria_backend,feature/pagos,Refactor frontend UI,100,98,success
+c1cb481a,carlos_dev,feature/pagos,Fix login,418,56,success
+16d3e737,junior_juan,hotfix/urgente,Update frontend UI,246,54,success
+7ee6cb81,junior_juan,ci/cd-proyecto,Add login,307,112,failure
+4d4bca2b,ANNDREW492,main,Update login,419,126,success
+661c7fd1,ANNDREW492,main,Fix Docker config,78,12,success
+56201473,maria_backend,hotfix/urgente,Add frontend UI,415,113,failure
+8f27d7f3,carlos_dev,main,Remove frontend UI,316,86,success
+66cbe9bc,carlos_dev,feature/pagos,Add login,240,43,success
+6b2ddf91,carlos_dev,hotfix/urgente,Remove multi-tenant DB,253,13,success
+47e85983,carlos_dev,main,Remove Docker config,147,37,success
+bc94b12f,ANNDREW492,feature/pagos,Remove multi-tenant DB,441,107,success
+24cc0ca7,maria_backend,feature/pagos,Fix Docker config,210,67,failure
+4b936d3c,maria_backend,feature/pagos,Remove API routes,144,114,failure
+8e7c6f93,ANNDREW492,ci/cd-proyecto,Add login,84,70,success
+a1559a32,junior_juan,ci/cd-proyecto,Add login,219,26,success
+d89b2fd6,junior_juan,hotfix/urgente,Add frontend UI,321,40,failure
+c0d7ed12,junior_juan,feature/pagos,Remove Docker config,442,117,failure
+fd4bdbff,carlos_dev,main,Remove frontend UI,92,127,success
+8a987089,ANNDREW492,feature/pagos,Fix frontend UI,136,54,success
+0abe8883,carlos_dev,feature/pagos,Refactor API routes,407,64,failure
+34551fbc,carlos_dev,hotfix/urgente,Add multi-tenant DB,421,117,failure
+19bbd90c,maria_backend,ci/cd-proyecto,Refactor login,98,42,success
+c62d432a,carlos_dev,ci/cd-proyecto,Refactor API routes,234,90,success
+857a20de,carlos_dev,ci/cd-proyecto,Add Docker config,494,117,failure
+75b846c5,ANNDREW492,feature/pagos,Update frontend UI,324,25,failure
+bdae7878,ANNDREW492,ci/cd-proyecto,Fix Docker config,222,66,success
+7236fcd6,ANNDREW492,ci/cd-proyecto,Remove multi-tenant DB,289,94,success
+00582673,carlos_dev,hotfix/urgente,Remove API routes,394,79,failure
+67da207d,carlos_dev,ci/cd-proyecto,Fix multi-tenant DB,417,67,failure
+fb70777e,ANNDREW492,hotfix/urgente,Remove login,171,10,failure
+752a0d7c,junior_juan,main,Update API routes,219,30,success
+d8f575b3,carlos_dev,ci/cd-proyecto,Add frontend UI,466,95,success
+19833e08,junior_juan,main,Remove multi-tenant DB,211,53,failure
+62de9164,carlos_dev,feature/pagos,Remove API routes,64,86,success
+499ca161,maria_backend,ci/cd-proyecto,Remove API routes,26,85,success
+302aea50,junior_juan,hotfix/urgente,Add frontend UI,74,72,success
+731fddee,ANNDREW492,ci/cd-proyecto,Refactor login,2,62,success
+43875ef2,carlos_dev,hotfix/urgente,Add multi-tenant DB,421,121,success
+b831813d,ANNDREW492,hotfix/urgente,Add Docker config,93,123,success
+a7e05d7a,carlos_dev,feature/pagos,Remove multi-tenant DB,311,109,success
+62bf0ece,junior_juan,main,Fix Docker config,379,93,success
+7220ffea,maria_backend,main,Refactor Docker config,325,120,failure
+24d208d5,junior_juan,ci/cd-proyecto,Remove frontend UI,9,27,success
+a1cb31e4,ANNDREW492,feature/pagos,Fix frontend UI,58,78,success
+a22a09b8,maria_backend,hotfix/urgente,Add frontend UI,349,124,failure
+74fdfd30,ANNDREW492,feature/pagos,Refactor frontend UI,98,75,success
+eba2f9d6,junior_juan,hotfix/urgente,Fix API routes,259,97,success
+26af55bf,junior_juan,main,Refactor frontend UI,17,94,success
+c3be3aa8,carlos_dev,ci/cd-proyecto,Refactor login,258,64,success
+47a83cea,junior_juan,main,Remove Docker config,263,57,success
+89460b21,maria_backend,hotfix/urgente,Refactor login,183,37,failure
+7560f1c3,ANNDREW492,hotfix/urgente,Fix multi-tenant DB,138,35,success
+b4d5d04a,carlos_dev,feature/pagos,Refactor frontend UI,336,102,failure
+e0911a6e,maria_backend,feature/pagos,Remove API routes,216,21,success
+cb3d34d4,junior_juan,feature/pagos,Add login,499,24,success
+b22439cf,junior_juan,main,Refactor login,230,11,success
+08f7c297,maria_backend,feature/pagos,Fix Docker config,153,102,success
+135314b4,maria_backend,hotfix/urgente,Fix API routes,71,111,success
+afde8b09,junior_juan,main,Refactor Docker config,447,66,failure
+64a29c5d,carlos_dev,hotfix/urgente,Add frontend UI,114,103,success
+79aa3322,maria_backend,ci/cd-proyecto,Add Docker config,204,100,success
+f768d336,junior_juan,ci/cd-proyecto,Fix multi-tenant DB,307,113,failure
+3cbd9d5f,maria_backend,main,Update Docker config,367,87,failure
+6414a8f5,ANNDREW492,feature/pagos,Refactor multi-tenant DB,161,91,success
+c0478271,maria_backend,ci/cd-proyecto,Update multi-tenant DB,162,100,success
+4d1a1728,maria_backend,ci/cd-proyecto,Update multi-tenant DB,270,66,success
+03aa07e9,carlos_dev,hotfix/urgente,Remove frontend UI,230,12,success
+3a70bbcb,carlos_dev,ci/cd-proyecto,Add Docker config,486,71,failure
+13aab12d,ANNDREW492,hotfix/urgente,Update Docker config,367,33,failure
+1752b58e,ANNDREW492,feature/pagos,Add API routes,323,96,failure
+12f5c49c,junior_juan,feature/pagos,Fix API routes,500,123,failure
+24a92b2b,junior_juan,ci/cd-proyecto,Add API routes,381,81,failure
+db6a5ba8,junior_juan,hotfix/urgente,Fix login,206,41,failure
+30bdc5c1,ANNDREW492,feature/pagos,Add login,421,24,success
+264d3ab5,maria_backend,feature/pagos,Add frontend UI,202,64,failure
+49001582,junior_juan,feature/pagos,Refactor login,490,75,failure
+b4c0b8d7,carlos_dev,feature/pagos,Update login,290,82,success
+d510271a,junior_juan,feature/pagos,Refactor API routes,229,75,success
+d9ca03e4,junior_juan,ci/cd-proyecto,Add Docker config,206,105,success
+05f603a1,maria_backend,main,Update API routes,387,69,success
+2cbc5794,maria_backend,feature/pagos,Refactor Docker config,204,51,success
+a998ae77,maria_backend,ci/cd-proyecto,Update Docker config,306,31,success
+440da380,junior_juan,hotfix/urgente,Update API routes,72,13,failure
+7fcf9176,ANNDREW492,feature/pagos,Refactor multi-tenant DB,168,86,success
+fe0da843,ANNDREW492,main,Fix Docker config,303,41,success
+3dec44f9,maria_backend,ci/cd-proyecto,Fix frontend UI,357,55,failure
+2995d529,maria_backend,feature/pagos,Remove Docker config,331,19,success
+0d7a5e64,maria_backend,feature/pagos,Update frontend UI,392,46,failure
+d2d7eeca,carlos_dev,feature/pagos,Refactor login,342,77,failure
+61247d03,carlos_dev,main,Add API routes,9,62,success
+6fb83804,carlos_dev,feature/pagos,Fix frontend UI,465,85,success
+70821989,ANNDREW492,feature/pagos,Refactor Docker config,201,72,success
+1bff0b47,maria_backend,ci/cd-proyecto,Refactor multi-tenant DB,202,78,success
+f8ff23be,maria_backend,hotfix/urgente,Add Docker config,483,117,failure
+e6ee6662,carlos_dev,feature/pagos,Refactor Docker config,66,86,success
+0e7b685b,maria_backend,main,Remove Docker config,25,41,success
+093d9bba,carlos_dev,hotfix/urgente,Fix multi-tenant DB,422,45,failure
+99e44bb5,carlos_dev,hotfix/urgente,Fix login,258,43,failure
+242d5bef,ANNDREW492,ci/cd-proyecto,Update login,397,118,failure
+a751432f,maria_backend,hotfix/urgente,Refactor multi-tenant DB,319,96,failure
+1c71fffb,junior_juan,hotfix/urgente,Fix Docker config,79,95,failure
+e2d44835,carlos_dev,main,Fix API routes,376,38,success
+a86b8cf0,maria_backend,ci/cd-proyecto,Add multi-tenant DB,55,120,success
+746078a7,ANNDREW492,ci/cd-proyecto,Add API routes,151,123,success
+b1fa70ae,junior_juan,main,Update login,464,53,success
+1ecbfbf5,ANNDREW492,feature/pagos,Refactor multi-tenant DB,156,85,success
+f9c405e3,junior_juan,ci/cd-proyecto,Refactor Docker config,56,127,success
+e88ea5a0,ANNDREW492,feature/pagos,Add login,100,55,success
+14d134f7,maria_backend,hotfix/urgente,Fix frontend UI,142,16,failure
+b27cff18,junior_juan,ci/cd-proyecto,Add multi-tenant DB,433,86,failure
+24eb2d97,maria_backend,ci/cd-proyecto,Update multi-tenant DB,102,42,success
+bedf0c32,carlos_dev,main,Update multi-tenant DB,472,20,success
+785fd70a,maria_backend,main,Update frontend UI,264,110,success
+9bb57b4a,ANNDREW492,hotfix/urgente,Remove API routes,442,18,failure
+62d7d32a,ANNDREW492,main,Refactor API routes,220,34,success
+c9ce46e5,junior_juan,main,Add multi-tenant DB,359,92,failure
+59be79ab,maria_backend,main,Fix multi-tenant DB,279,46,success
+e235b87d,maria_backend,ci/cd-proyecto,Update multi-tenant DB,124,44,success
+668a6713,junior_juan,ci/cd-proyecto,Fix API routes,356,44,failure
+cc79f5c4,maria_backend,ci/cd-proyecto,Add Docker config,301,33,failure
+8e797d4e,junior_juan,ci/cd-proyecto,Add Docker config,373,104,success
+cfefafd9,ANNDREW492,hotfix/urgente,Add login,273,105,success
+63bd8389,carlos_dev,main,Remove login,328,116,failure
+9d433122,maria_backend,main,Update API routes,437,13,failure
+63d4e7da,junior_juan,ci/cd-proyecto,Refactor Docker config,189,47,success
+64f3ced1,maria_backend,ci/cd-proyecto,Fix API routes,467,50,failure
+43327bc1,junior_juan,ci/cd-proyecto,Add login,366,125,failure
+b18034c8,ANNDREW492,main,Fix login,99,87,success
+1641171d,junior_juan,main,Remove frontend UI,479,34,failure
+d241de09,ANNDREW492,hotfix/urgente,Add login,224,18,success
+89f78551,carlos_dev,hotfix/urgente,Add API routes,386,37,failure
+6e860342,junior_juan,ci/cd-proyecto,Add Docker config,18,72,failure
+280b4245,maria_backend,main,Add login,410,87,success
+0abc4f1b,maria_backend,hotfix/urgente,Remove Docker config,301,71,failure
+1ac5fac6,maria_backend,ci/cd-proyecto,Fix login,321,23,failure
+29f0fece,carlos_dev,hotfix/urgente,Fix login,8,18,failure
+8777f13f,ANNDREW492,feature/pagos,Fix Docker config,247,109,success
+bfd6f5e5,junior_juan,feature/pagos,Remove multi-tenant DB,387,79,success
+583fd151,ANNDREW492,hotfix/urgente,Add multi-tenant DB,493,51,failure
+3c13a4a7,carlos_dev,hotfix/urgente,Fix API routes,325,47,failure
+c0b5bb6c,ANNDREW492,hotfix/urgente,Remove API routes,1,118,success
+4e6f0df3,ANNDREW492,ci/cd-proyecto,Update Docker config,474,88,failure
+220834d4,carlos_dev,feature/pagos,Update API routes,299,118,success
+172f11e0,carlos_dev,hotfix/urgente,Fix Docker config,24,45,success
+64b5efc5,maria_backend,feature/pagos,Add multi-tenant DB,136,15,success
+77aae858,ANNDREW492,ci/cd-proyecto,Add frontend UI,105,25,success
+60f93495,ANNDREW492,ci/cd-proyecto,Fix login,290,58,success
+5ea473dc,junior_juan,hotfix/urgente,Fix Docker config,373,90,failure
+1264c3bd,maria_backend,hotfix/urgente,Update multi-tenant DB,451,97,failure
+23b002a3,ANNDREW492,ci/cd-proyecto,Fix login,471,104,success
+bcf1e4a0,ANNDREW492,main,Update login,139,81,success
+604da188,carlos_dev,main,Fix Docker config,301,44,success
+493dc37d,carlos_dev,hotfix/urgente,Update Docker config,288,76,success
+1ba89a89,ANNDREW492,feature/pagos,Fix Docker config,369,70,success
+3aad6897,maria_backend,feature/pagos,Remove login,364,26,failure
+743527ba,junior_juan,main,Refactor login,202,47,success
+ca11b274,ANNDREW492,feature/pagos,Add frontend UI,251,114,success
+54f3ab25,junior_juan,ci/cd-proyecto,Refactor frontend UI,500,102,failure
+e65e7301,junior_juan,hotfix/urgente,Remove multi-tenant DB,291,21,failure
+b705bf0c,maria_backend,ci/cd-proyecto,Update API routes,268,65,success
+2c549961,carlos_dev,feature/pagos,Add frontend UI,397,93,failure
+94e30b16,maria_backend,main,Remove Docker config,22,56,success
+37fc55ab,maria_backend,main,Refactor multi-tenant DB,40,113,success
+0a9bdf27,maria_backend,feature/pagos,Fix login,184,58,success
+a0c490f8,ANNDREW492,feature/pagos,Add frontend UI,77,67,success
+cedc9076,junior_juan,ci/cd-proyecto,Fix login,118,61,success
+1215bf22,junior_juan,feature/pagos,Update multi-tenant DB,315,95,failure
+cb95879a,junior_juan,hotfix/urgente,Remove API routes,364,48,failure
+024abd3b,ANNDREW492,main,Refactor login,81,32,success
+77eb7094,ANNDREW492,hotfix/urgente,Update Docker config,287,38,failure
+09b0b340,junior_juan,ci/cd-proyecto,Fix frontend UI,494,100,failure
+ea1f7145,maria_backend,main,Add Docker config,432,98,success
+49251f5e,maria_backend,main,Fix multi-tenant DB,472,102,failure
+c1d84e83,junior_juan,hotfix/urgente,Update multi-tenant DB,377,25,failure
+3ff73c5d,maria_backend,ci/cd-proyecto,Fix API routes,364,91,success
+292b965e,ANNDREW492,ci/cd-proyecto,Update Docker config,486,23,failure
+56c5c48a,ANNDREW492,feature/pagos,Update API routes,150,37,success
+affc7207,carlos_dev,hotfix/urgente,Add multi-tenant DB,403,127,failure
+4509c347,junior_juan,hotfix/urgente,Fix multi-tenant DB,111,28,success
+1384998f,ANNDREW492,hotfix/urgente,Add frontend UI,141,31,success
+72ade46b,carlos_dev,hotfix/urgente,Fix login,169,15,failure
+4c10f04a,carlos_dev,ci/cd-proyecto,Add frontend UI,60,125,success
+46230666,ANNDREW492,ci/cd-proyecto,Update login,450,104,success
+13ef9b8e,junior_juan,feature/pagos,Update login,416,26,success
+d88a6a19,maria_backend,ci/cd-proyecto,Remove frontend UI,62,83,success
+00a8593f,carlos_dev,main,Refactor frontend UI,74,92,success
+abdaded7,maria_backend,feature/pagos,Remove login,26,74,success
+cf0635d1,maria_backend,ci/cd-proyecto,Remove multi-tenant DB,215,59,success
+00cbfc8b,maria_backend,main,Add Docker config,485,120,success
+bfe19d5a,carlos_dev,feature/pagos,Remove frontend UI,200,118,success
+d20aca2b,junior_juan,main,Remove API routes,21,95,success
+cc332e6e,ANNDREW492,main,Update multi-tenant DB,147,33,success
+7da7dc04,maria_backend,hotfix/urgente,Fix multi-tenant DB,253,92,success
+ba018e90,ANNDREW492,feature/pagos,Update multi-tenant DB,486,84,failure
+f8500511,maria_backend,feature/pagos,Add Docker config,197,32,success
+16382140,maria_backend,main,Add Docker config,78,17,success
+6f62d590,carlos_dev,feature/pagos,Update frontend UI,326,14,success
+d302f60a,maria_backend,ci/cd-proyecto,Refactor API routes,117,95,success
+65b00aa5,maria_backend,main,Fix API routes,159,78,success
+259a3e0f,ANNDREW492,ci/cd-proyecto,Update multi-tenant DB,432,65,failure
+d4acaa92,maria_backend,hotfix/urgente,Add frontend UI,315,49,success
+be0ed0b3,carlos_dev,main,Remove frontend UI,271,76,success
+bf8e4288,carlos_dev,main,Remove Docker config,47,113,success
+85806d5f,ANNDREW492,main,Update Docker config,121,22,success
+44b692c4,junior_juan,hotfix/urgente,Fix multi-tenant DB,160,81,success
+cc854a13,carlos_dev,feature/pagos,Remove multi-tenant DB,295,120,success
+96e0e42f,ANNDREW492,hotfix/urgente,Remove Docker config,411,96,failure
+7a08d62c,carlos_dev,hotfix/urgente,Fix multi-tenant DB,114,97,success
+99618d0f,ANNDREW492,hotfix/urgente,Update Docker config,195,120,success
+5b3cf31d,junior_juan,ci/cd-proyecto,Refactor login,412,126,failure
+abe4da72,ANNDREW492,main,Remove Docker config,443,35,success
+4a215157,ANNDREW492,main,Add API routes,268,61,success
+599f8cb7,carlos_dev,feature/pagos,Fix Docker config,260,30,success
+1d55ed14,junior_juan,ci/cd-proyecto,Remove API routes,160,120,success
+03274bb9,maria_backend,main,Remove login,405,57,success
+af6decfe,carlos_dev,feature/pagos,Refactor API routes,302,105,failure
+5161a994,ANNDREW492,main,Remove login,233,57,success
+8f07dc76,maria_backend,hotfix/urgente,Remove multi-tenant DB,266,71,failure
+757a6650,ANNDREW492,feature/pagos,Add Docker config,233,110,success
+a2fde162,ANNDREW492,feature/pagos,Update Docker config,86,77,success
+aa1292fd,carlos_dev,main,Refactor API routes,235,76,success
+60fb6a2a,carlos_dev,feature/pagos,Remove API routes,152,34,success
+8f808bd0,carlos_dev,feature/pagos,Add frontend UI,206,77,success
+1cbb2778,carlos_dev,main,Refactor login,308,28,success
+f24cc1a6,maria_backend,ci/cd-proyecto,Fix Docker config,485,67,failure
+b5ecc60b,ANNDREW492,main,Fix multi-tenant DB,475,116,failure
+d2d272df,maria_backend,feature/pagos,Update login,326,30,success
+8156fad6,junior_juan,hotfix/urgente,Add login,160,51,success
+f5916129,junior_juan,hotfix/urgente,Fix frontend UI,347,126,failure
+5bc1c40f,ANNDREW492,feature/pagos,Remove login,43,56,success
+5835a618,ANNDREW492,hotfix/urgente,Add Docker config,270,116,success
+054b8a8d,ANNDREW492,hotfix/urgente,Add API routes,325,128,failure
+bf177578,junior_juan,feature/pagos,Update API routes,453,54,failure
+27e38f56,junior_juan,ci/cd-proyecto,Fix Docker config,19,109,success
+045effc8,carlos_dev,main,Refactor login,340,38,success
+b2b836dd,carlos_dev,hotfix/urgente,Fix multi-tenant DB,487,38,success
+6fd517b6,maria_backend,main,Refactor login,277,14,success
+9a60af66,maria_backend,hotfix/urgente,Refactor multi-tenant DB,235,47,success
+75162705,maria_backend,main,Add login,287,120,success
+6aae272e,ANNDREW492,feature/pagos,Fix API routes,190,109,success
+73ddeb1a,maria_backend,hotfix/urgente,Refactor login,231,79,success
+8d39d15c,junior_juan,hotfix/urgente,Update multi-tenant DB,476,121,failure
+e473a14e,ANNDREW492,main,Refactor Docker config,413,79,success
+de7fe2f6,maria_backend,main,Remove login,290,62,success
+efee510e,maria_backend,main,Update API routes,442,29,failure
+3473c870,carlos_dev,hotfix/urgente,Add Docker config,242,57,success
+3ed23fd1,maria_backend,ci/cd-proyecto,Fix login,54,92,success
+27b6baba,carlos_dev,main,Fix Docker config,270,10,success
+d2ba9e57,junior_juan,ci/cd-proyecto,Refactor login,483,89,failure
+cda50842,carlos_dev,main,Update API routes,332,35,success
+fb7505ec,maria_backend,hotfix/urgente,Remove frontend UI,94,40,failure
+0e5865af,ANNDREW492,ci/cd-proyecto,Refactor Docker config,341,85,failure
+304ea118,maria_backend,ci/cd-proyecto,Fix login,394,59,success
+5c643e93,junior_juan,main,Fix API routes,56,73,success
+b4744c1d,junior_juan,main,Remove frontend UI,451,68,success
+ec49c480,ANNDREW492,feature/pagos,Update login,190,10,success
+2524c8ef,carlos_dev,feature/pagos,Remove login,242,86,success
+81b8e9fc,junior_juan,ci/cd-proyecto,Update multi-tenant DB,106,67,failure
+2e79b174,ANNDREW492,feature/pagos,Refactor multi-tenant DB,332,124,failure
+2571f661,carlos_dev,hotfix/urgente,Remove API routes,401,46,failure
+388b4796,carlos_dev,ci/cd-proyecto,Add login,153,65,success
+2991f8d6,junior_juan,feature/pagos,Fix frontend UI,257,99,success
+171662db,maria_backend,feature/pagos,Fix Docker config,479,18,failure
+7d89f763,ANNDREW492,main,Add Docker config,422,100,failure
+00c7c2f8,maria_backend,ci/cd-proyecto,Refactor API routes,133,41,success
+5d20a033,junior_juan,main,Refactor Docker config,469,92,success
+0835b6e4,maria_backend,feature/pagos,Refactor multi-tenant DB,231,38,success
+c38296e2,junior_juan,feature/pagos,Remove multi-tenant DB,7,83,failure
+8889df70,ANNDREW492,main,Add multi-tenant DB,323,53,failure
+f45671a4,junior_juan,main,Update frontend UI,388,29,failure
+b5244368,maria_backend,ci/cd-proyecto,Fix login,97,47,success
+69c9b39d,junior_juan,ci/cd-proyecto,Fix multi-tenant DB,333,91,failure
+f730df24,ANNDREW492,feature/pagos,Update login,126,90,success
+ede2de68,maria_backend,feature/pagos,Add login,375,57,success
+b91f8d8a,maria_backend,feature/pagos,Refactor frontend UI,32,51,success
+d055e22d,carlos_dev,hotfix/urgente,Refactor API routes,476,17,failure
+09ff1cf4,junior_juan,main,Add frontend UI,203,14,success
+5f45faa3,carlos_dev,ci/cd-proyecto,Remove Docker config,464,25,failure
+caa20ab4,ANNDREW492,ci/cd-proyecto,Fix API routes,482,85,failure
+9ea11f6f,junior_juan,ci/cd-proyecto,Refactor Docker config,236,42,success
+cd7e05ed,carlos_dev,main,Remove API routes,153,57,success
+e49cbc15,junior_juan,feature/pagos,Refactor Docker config,19,76,success
+07c06229,carlos_dev,hotfix/urgente,Remove API routes,203,84,success
+c970073a,junior_juan,main,Remove multi-tenant DB,368,51,failure
+3fbcff07,carlos_dev,main,Add API routes,84,119,success
+fdd396de,carlos_dev,hotfix/urgente,Fix frontend UI,396,117,failure
+ee532e39,junior_juan,main,Fix login,277,75,success
+08afaa49,carlos_dev,ci/cd-proyecto,Fix frontend UI,98,44,success
+676c48a0,carlos_dev,hotfix/urgente,Add login,406,49,failure
+08231257,maria_backend,main,Update login,51,28,failure
+c9bfa0ac,carlos_dev,hotfix/urgente,Add multi-tenant DB,11,42,success
+5c720c95,junior_juan,main,Add API routes,398,51,failure
+edc9f51f,maria_backend,feature/pagos,Update API routes,336,100,success
+ab2bf626,carlos_dev,main,Add API routes,250,82,success
+5c4267d4,ANNDREW492,main,Update API routes,180,59,success
+95b91f3e,junior_juan,ci/cd-proyecto,Fix frontend UI,81,10,failure
+523d6002,ANNDREW492,main,Refactor frontend UI,153,65,success
+85951638,ANNDREW492,main,Add frontend UI,204,124,success
+68c85773,junior_juan,hotfix/urgente,Fix multi-tenant DB,132,52,failure
+ed91fa54,ANNDREW492,feature/pagos,Add API routes,220,45,success
+a787de65,maria_backend,ci/cd-proyecto,Add login,104,18,success
+9ed330fd,junior_juan,ci/cd-proyecto,Remove Docker config,277,22,success
+a05c1712,maria_backend,ci/cd-proyecto,Update API routes,429,102,success
+9cc879ec,carlos_dev,feature/pagos,Update API routes,222,61,failure
+c9e2b8ad,junior_juan,ci/cd-proyecto,Add multi-tenant DB,276,13,success
+029c1a35,maria_backend,ci/cd-proyecto,Fix login,109,105,success
+8527b06a,carlos_dev,feature/pagos,Fix multi-tenant DB,294,35,success
+dbaff0b4,maria_backend,feature/pagos,Fix frontend UI,422,17,success
+d4bb94eb,carlos_dev,main,Remove API routes,286,53,success
+ae45c285,maria_backend,ci/cd-proyecto,Update login,258,58,success
+edeb1ebf,junior_juan,hotfix/urgente,Update frontend UI,411,90,failure
+4c1666e6,ANNDREW492,ci/cd-proyecto,Refactor multi-tenant DB,20,10,success
+49ef7dce,maria_backend,hotfix/urgente,Remove login,244,41,success
+08763a5d,maria_backend,main,Refactor Docker config,464,42,failure
+24e7e26e,carlos_dev,main,Refactor API routes,141,62,success
+d29ed87f,junior_juan,ci/cd-proyecto,Refactor multi-tenant DB,391,83,failure
+577550c2,ANNDREW492,feature/pagos,Add API routes,458,52,failure
+c977ddc1,carlos_dev,hotfix/urgente,Fix Docker config,47,107,success
+5834e8d8,ANNDREW492,hotfix/urgente,Add frontend UI,456,97,failure
+ae2012ab,ANNDREW492,hotfix/urgente,Fix login,397,73,failure
+542f85d0,junior_juan,feature/pagos,Remove multi-tenant DB,98,88,failure
+8134bfb1,carlos_dev,feature/pagos,Fix multi-tenant DB,108,124,success
+cb450f5b,ANNDREW492,hotfix/urgente,Refactor Docker config,230,122,success
+2d2e1878,ANNDREW492,main,Fix frontend UI,436,15,failure
+bf7606e3,ANNDREW492,feature/pagos,Refactor multi-tenant DB,81,98,success
+a2cc4c54,maria_backend,hotfix/urgente,Remove Docker config,122,54,success
+970b668a,ANNDREW492,ci/cd-proyecto,Remove login,358,13,success
+533f3340,maria_backend,ci/cd-proyecto,Fix login,190,50,success
+8c6d8580,carlos_dev,feature/pagos,Fix multi-tenant DB,159,11,success
+094b95ec,maria_backend,main,Refactor API routes,199,19,success
+43d85a9f,ANNDREW492,ci/cd-proyecto,Add multi-tenant DB,440,69,failure
+de8dff14,junior_juan,ci/cd-proyecto,Update API routes,255,29,success
+c9c50b34,ANNDREW492,main,Update frontend UI,456,110,success
+a4f26892,maria_backend,main,Update Docker config,97,60,success
+15c59cef,carlos_dev,hotfix/urgente,Fix frontend UI,340,17,failure
+db73f891,junior_juan,ci/cd-proyecto,Remove multi-tenant DB,71,112,failure
+194c783c,carlos_dev,main,Fix multi-tenant DB,186,61,success
+d8d03b5b,carlos_dev,hotfix/urgente,Remove frontend UI,394,78,success
+161d01a6,carlos_dev,feature/pagos,Remove frontend UI,131,121,success
+62e9db93,maria_backend,main,Update Docker config,143,20,success
+473548f7,ANNDREW492,main,Remove login,431,35,failure
+22aa23a7,junior_juan,feature/pagos,Add Docker config,159,24,success
+57ec537d,junior_juan,main,Fix multi-tenant DB,64,120,failure
+d166b074,junior_juan,main,Remove Docker config,4,58,success
+007ccc1f,ANNDREW492,hotfix/urgente,Remove frontend UI,96,100,success
+6298a1a5,carlos_dev,main,Fix API routes,154,80,success
+94c93e4f,junior_juan,ci/cd-proyecto,Fix login,303,10,failure
+26114e11,junior_juan,main,Update API routes,27,12,failure
+bc5d20e6,maria_backend,ci/cd-proyecto,Add frontend UI,499,59,success
+02ffbe20,ANNDREW492,ci/cd-proyecto,Add login,22,36,success
+8f2a7b92,carlos_dev,main,Update multi-tenant DB,425,81,success
+cf196371,ANNDREW492,feature/pagos,Fix frontend UI,175,88,success
+f2cc8ac4,maria_backend,hotfix/urgente,Update frontend UI,18,111,failure
+57fbdf71,maria_backend,feature/pagos,Refactor API routes,221,46,success
+49f4f896,carlos_dev,feature/pagos,Remove multi-tenant DB,23,125,success
+c702c9a5,ANNDREW492,hotfix/urgente,Update Docker config,365,58,failure
+40f142cf,ANNDREW492,main,Refactor Docker config,475,80,success
+7edca7f6,carlos_dev,feature/pagos,Refactor frontend UI,204,117,success
+10295325,carlos_dev,feature/pagos,Fix Docker config,472,42,success
+8eb9f5cb,carlos_dev,hotfix/urgente,Refactor login,44,38,failure
+00448774,junior_juan,ci/cd-proyecto,Refactor Docker config,427,73,failure
+bb635bc2,carlos_dev,ci/cd-proyecto,Update API routes,435,58,failure
+fe7516d7,maria_backend,main,Update multi-tenant DB,337,45,success
+f98c8c8a,carlos_dev,hotfix/urgente,Add API routes,422,113,failure
+eb89483f,ANNDREW492,hotfix/urgente,Fix frontend UI,235,42,success
+65e16b2b,junior_juan,main,Remove frontend UI,363,66,failure
+cf984a80,junior_juan,main,Add API routes,307,45,success
+e844c47e,junior_juan,feature/pagos,Remove frontend UI,403,14,success
+fae1c04f,ANNDREW492,ci/cd-proyecto,Add Docker config,438,122,failure
+9f5c33c9,maria_backend,main,Update login,337,65,failure
+f1e7037c,junior_juan,ci/cd-proyecto,Add multi-tenant DB,364,54,failure
+5a0f997a,carlos_dev,main,Update Docker config,175,97,success
+f71b4e6e,junior_juan,hotfix/urgente,Add Docker config,403,72,failure
+310cccdc,junior_juan,ci/cd-proyecto,Fix frontend UI,335,69,failure
+bc62b420,carlos_dev,hotfix/urgente,Remove Docker config,322,96,failure
+e11b5a48,maria_backend,main,Refactor Docker config,250,12,success
+41bf3f4a,maria_backend,hotfix/urgente,Refactor Docker config,11,125,failure
+f7facce8,carlos_dev,ci/cd-proyecto,Update frontend UI,355,90,failure
+5f81fb07,ANNDREW492,main,Add multi-tenant DB,17,29,success
+a711e69d,ANNDREW492,hotfix/urgente,Update login,14,86,failure
+8494afb1,ANNDREW492,ci/cd-proyecto,Add API routes,28,25,success
+f417f55f,junior_juan,main,Remove frontend UI,204,113,success
+f3678166,carlos_dev,ci/cd-proyecto,Remove frontend UI,125,50,failure
+b3534168,junior_juan,main,Fix API routes,431,39,failure
+c2f29cf7,maria_backend,ci/cd-proyecto,Add Docker config,183,55,success
+950f901b,ANNDREW492,ci/cd-proyecto,Add login,364,116,failure
+197ffe9f,junior_juan,ci/cd-proyecto,Update frontend UI,475,127,failure
+01cc070c,junior_juan,main,Update Docker config,381,122,failure
+7d7735de,carlos_dev,ci/cd-proyecto,Fix multi-tenant DB,487,31,success
+400dac0d,maria_backend,ci/cd-proyecto,Add Docker config,204,111,success
+2f2f65e7,junior_juan,ci/cd-proyecto,Add Docker config,2,58,success
+a804c690,carlos_dev,ci/cd-proyecto,Remove multi-tenant DB,82,63,success
+e6a63380,ANNDREW492,main,Fix login,132,44,success
+efbdcfc5,ANNDREW492,feature/pagos,Fix frontend UI,166,37,success
+dd637d97,maria_backend,main,Add Docker config,491,90,success
+94ecf77b,junior_juan,ci/cd-proyecto,Remove Docker config,46,115,success
+d833990c,carlos_dev,feature/pagos,Add login,129,105,success
+a1d65209,maria_backend,hotfix/urgente,Update API routes,332,127,failure
+fc9d0b2b,ANNDREW492,feature/pagos,Remove Docker config,62,41,success
+deee30eb,junior_juan,ci/cd-proyecto,Refactor login,68,32,success
+a4b41a9c,maria_backend,hotfix/urgente,Refactor Docker config,308,81,failure
+efa7e490,maria_backend,hotfix/urgente,Add login,111,70,failure
+cb133d64,ANNDREW492,hotfix/urgente,Remove login,371,19,failure
+950011ef,junior_juan,main,Refactor Docker config,241,52,failure
+8839abba,carlos_dev,feature/pagos,Fix Docker config,33,107,success
+920c1758,ANNDREW492,main,Refactor multi-tenant DB,374,45,failure
+c2e3a574,carlos_dev,ci/cd-proyecto,Remove frontend UI,77,35,success
+9459de7d,junior_juan,feature/pagos,Add login,54,79,failure
+080fdc0e,carlos_dev,hotfix/urgente,Add API routes,306,37,failure
+acf3df34,junior_juan,feature/pagos,Add login,93,111,success
+d1835c0c,carlos_dev,main,Refactor multi-tenant DB,178,74,success
+43ac012c,maria_backend,ci/cd-proyecto,Update API routes,277,23,success
+cb6ff26e,ANNDREW492,hotfix/urgente,Refactor API routes,407,127,failure
+524ae8a3,carlos_dev,hotfix/urgente,Refactor Docker config,177,62,success
+6a84220a,carlos_dev,main,Add login,138,126,success
+21ea0f7c,maria_backend,hotfix/urgente,Fix frontend UI,226,82,failure
+4a6b90ae,ANNDREW492,feature/pagos,Update frontend UI,494,13,failure
+23dee9b5,junior_juan,main,Update multi-tenant DB,377,97,failure
+22a4acc3,carlos_dev,main,Fix login,269,95,success
+2ca6045f,maria_backend,feature/pagos,Add Docker config,439,96,success
+b7188424,carlos_dev,feature/pagos,Update API routes,34,106,success
+968ad3c4,junior_juan,hotfix/urgente,Update multi-tenant DB,413,28,failure
+10272959,junior_juan,hotfix/urgente,Remove login,133,46,success
+d9940e57,maria_backend,hotfix/urgente,Add Docker config,347,71,failure
+459da475,maria_backend,ci/cd-proyecto,Refactor login,215,12,success
+b27c9056,ANNDREW492,feature/pagos,Refactor Docker config,464,13,success
+12871348,junior_juan,ci/cd-proyecto,Remove frontend UI,400,82,failure
+45ffc837,maria_backend,feature/pagos,Fix multi-tenant DB,396,43,failure
+12336264,junior_juan,ci/cd-proyecto,Refactor API routes,476,25,failure
+7a391638,junior_juan,hotfix/urgente,Update Docker config,137,74,success
+59ee4108,carlos_dev,main,Fix frontend UI,353,36,success
+768a53cc,maria_backend,hotfix/urgente,Add API routes,383,16,failure
+68c29ecf,carlos_dev,main,Remove login,334,37,failure
+cfb3bf2a,carlos_dev,main,Remove frontend UI,292,97,success
+a5d7e277,carlos_dev,ci/cd-proyecto,Refactor Docker config,123,36,success
+3391bb19,ANNDREW492,hotfix/urgente,Remove frontend UI,486,64,failure
+ca070e41,ANNDREW492,hotfix/urgente,Refactor Docker config,317,124,failure
+803c464e,carlos_dev,main,Update Docker config,452,27,success
+e37941d2,carlos_dev,feature/pagos,Update login,8,25,success
+0a677138,carlos_dev,feature/pagos,Fix frontend UI,113,13,success
+8ad7d767,junior_juan,hotfix/urgente,Add API routes,480,42,failure
+c30549aa,carlos_dev,feature/pagos,Fix frontend UI,365,97,success
+513d201a,maria_backend,feature/pagos,Add multi-tenant DB,242,61,success
+d2acc639,maria_backend,ci/cd-proyecto,Remove frontend UI,371,85,failure
+1b9c9452,ANNDREW492,feature/pagos,Update frontend UI,273,90,success
+14af12b0,ANNDREW492,ci/cd-proyecto,Update Docker config,323,63,failure
+68886247,carlos_dev,feature/pagos,Update API routes,26,26,success
+74ca6dfe,carlos_dev,ci/cd-proyecto,Update multi-tenant DB,198,110,success
+df7424b3,junior_juan,main,Add multi-tenant DB,136,81,failure
+650abb7d,junior_juan,ci/cd-proyecto,Fix multi-tenant DB,178,94,success
+20dce1e9,ANNDREW492,hotfix/urgente,Refactor Docker config,249,62,success
+3eda9909,junior_juan,ci/cd-proyecto,Remove frontend UI,104,110,success
+c46743e0,junior_juan,main,Fix Docker config,444,79,failure
+025d5cab,maria_backend,main,Fix login,469,44,failure
+dd042db5,maria_backend,main,Update Docker config,309,69,failure
+0666a586,junior_juan,hotfix/urgente,Refactor login,295,88,failure
+e04d51b4,ANNDREW492,ci/cd-proyecto,Add login,145,104,success
+ee0f3bd4,maria_backend,feature/pagos,Update frontend UI,400,28,failure
+cd7e2c32,carlos_dev,main,Update multi-tenant DB,20,52,success
+a8572b62,maria_backend,main,Update login,178,51,success
+2b3024dd,maria_backend,feature/pagos,Add multi-tenant DB,479,36,failure
+3de89f8b,junior_juan,feature/pagos,Add frontend UI,47,29,success
+7bc445bd,carlos_dev,main,Refactor frontend UI,71,118,success
+b2448bb1,ANNDREW492,ci/cd-proyecto,Refactor multi-tenant DB,452,59,failure
+a8a16b1e,carlos_dev,feature/pagos,Add multi-tenant DB,34,39,failure
+94ccd275,carlos_dev,ci/cd-proyecto,Remove API routes,481,30,success
+46da842d,ANNDREW492,hotfix/urgente,Update Docker config,59,67,failure
+f09fe63d,junior_juan,feature/pagos,Update login,408,48,success
+d96a459c,maria_backend,feature/pagos,Add Docker config,249,46,success
+fe988ed5,junior_juan,ci/cd-proyecto,Update multi-tenant DB,331,123,failure
+d4b51b86,junior_juan,ci/cd-proyecto,Add login,138,52,success
+aeaee95e,carlos_dev,feature/pagos,Remove multi-tenant DB,251,74,success
+c1f404f8,junior_juan,feature/pagos,Fix multi-tenant DB,145,79,failure
+5b7b0e76,maria_backend,main,Refactor API routes,411,74,success
+618267ff,junior_juan,ci/cd-proyecto,Refactor Docker config,82,115,success
+00ca8aa6,ANNDREW492,hotfix/urgente,Fix API routes,84,115,success
+e915d2de,maria_backend,ci/cd-proyecto,Fix API routes,451,89,failure
+eadd6ab8,maria_backend,main,Update frontend UI,458,42,success
+49484a5c,maria_backend,hotfix/urgente,Fix Docker config,112,67,failure
+659c86b7,junior_juan,feature/pagos,Update multi-tenant DB,390,110,success
+4c982b3b,ANNDREW492,ci/cd-proyecto,Update API routes,307,75,failure
+14adf803,carlos_dev,main,Add login,211,46,success
+7c0925d2,carlos_dev,ci/cd-proyecto,Refactor API routes,77,28,success
+6f2d2ad7,maria_backend,feature/pagos,Add login,303,79,success
+a2b0453f,ANNDREW492,feature/pagos,Fix login,255,120,success
+632019c5,carlos_dev,feature/pagos,Remove multi-tenant DB,268,78,failure
+ab84c5db,ANNDREW492,ci/cd-proyecto,Refactor API routes,398,127,success
+c371888a,ANNDREW492,hotfix/urgente,Update Docker config,172,87,failure
+8c17070b,ANNDREW492,ci/cd-proyecto,Refactor login,328,94,success
+58fb4010,maria_backend,feature/pagos,Update login,84,52,failure
+f97ec49a,maria_backend,ci/cd-proyecto,Update login,85,102,success
+31c6d0b7,maria_backend,feature/pagos,Refactor Docker config,103,124,success
+ae356e9b,maria_backend,feature/pagos,Add multi-tenant DB,326,99,failure
+4dff5351,ANNDREW492,feature/pagos,Add multi-tenant DB,40,88,success
+0449508b,ANNDREW492,feature/pagos,Refactor Docker config,233,76,success
+6e8db4c9,junior_juan,main,Remove Docker config,467,47,failure
+c865f122,maria_backend,main,Add multi-tenant DB,61,37,success
+61070778,maria_backend,hotfix/urgente,Remove frontend UI,271,95,success
+7f5be637,junior_juan,ci/cd-proyecto,Add API routes,278,104,success
+41de7720,maria_backend,hotfix/urgente,Fix multi-tenant DB,248,124,failure
+2fad77fb,ANNDREW492,main,Refactor API routes,302,93,failure
+865d81cb,carlos_dev,feature/pagos,Refactor login,54,96,success
+a11a230b,carlos_dev,main,Add Docker config,212,57,success
+25d31faa,carlos_dev,main,Update API routes,17,65,success
+b1482af1,carlos_dev,feature/pagos,Refactor multi-tenant DB,284,13,success
+8e64a46a,junior_juan,hotfix/urgente,Refactor frontend UI,110,116,failure
+1ee8b9d0,ANNDREW492,main,Update API routes,391,118,failure
+3a45d679,ANNDREW492,hotfix/urgente,Remove multi-tenant DB,348,80,failure
+6db77c20,junior_juan,ci/cd-proyecto,Refactor login,352,35,failure
+935b7039,carlos_dev,main,Update API routes,125,73,failure
+b9291035,junior_juan,feature/pagos,Add Docker config,339,13,failure
+3e16f7cf,junior_juan,ci/cd-proyecto,Update Docker config,29,56,success
+a9c5c5b2,carlos_dev,ci/cd-proyecto,Update multi-tenant DB,472,26,failure
+e8c8a5c4,junior_juan,hotfix/urgente,Update frontend UI,223,82,failure
+98d09b9a,junior_juan,feature/pagos,Update login,285,43,failure
+0c975ad1,maria_backend,feature/pagos,Add Docker config,235,18,success
+d3676a36,maria_backend,hotfix/urgente,Fix login,203,73,failure
+9332a382,carlos_dev,main,Remove frontend UI,294,66,success
+def84653,ANNDREW492,ci/cd-proyecto,Update login,464,80,failure
+3fc80798,ANNDREW492,hotfix/urgente,Refactor frontend UI,78,32,success
+9ca24c19,maria_backend,ci/cd-proyecto,Remove frontend UI,392,57,success
+3c6ef353,junior_juan,ci/cd-proyecto,Add Docker config,330,55,success
+1fe0d20d,maria_backend,feature/pagos,Refactor login,481,12,failure
+b468c188,ANNDREW492,main,Fix login,393,53,failure
+c722a046,ANNDREW492,ci/cd-proyecto,Add multi-tenant DB,279,98,success
+6a0682cb,junior_juan,main,Fix multi-tenant DB,62,78,success
+ec682c06,ANNDREW492,feature/pagos,Refactor multi-tenant DB,357,125,failure
+f5862ea4,carlos_dev,main,Refactor Docker config,451,83,failure
+4ae769b7,junior_juan,hotfix/urgente,Update multi-tenant DB,276,30,success
+9f0f5cc3,ANNDREW492,hotfix/urgente,Fix login,69,27,success
+ac2eb46d,ANNDREW492,hotfix/urgente,Remove Docker config,371,30,failure
+a6d814d1,ANNDREW492,main,Fix frontend UI,451,34,success
+ed155f4b,junior_juan,ci/cd-proyecto,Add login,415,104,failure
+5af5637e,carlos_dev,ci/cd-proyecto,Fix login,37,55,success
+f48d37ff,maria_backend,feature/pagos,Fix login,364,83,success
+52f79ed2,junior_juan,hotfix/urgente,Refactor Docker config,170,126,success
+de28c9d8,carlos_dev,hotfix/urgente,Remove login,462,71,failure
+de1f720c,junior_juan,ci/cd-proyecto,Fix frontend UI,122,129,failure
+47c90535,ANNDREW492,feature/pagos,Update API routes,225,28,success
+f7d3c727,junior_juan,ci/cd-proyecto,Refactor frontend UI,365,25,failure
+bab414ea,junior_juan,hotfix/urgente,Remove frontend UI,10,107,failure
+b978892a,junior_juan,feature/pagos,Remove API routes,387,91,failure
+80cb2603,ANNDREW492,main,Remove frontend UI,270,105,success
+31f4ec97,ANNDREW492,hotfix/urgente,Remove API routes,443,86,success
+9ac39af6,ANNDREW492,feature/pagos,Update API routes,446,46,success
+fdb16fab,carlos_dev,main,Fix API routes,116,119,success
+a9aa9fa8,carlos_dev,ci/cd-proyecto,Update Docker config,486,21,failure
+c371229a,maria_backend,ci/cd-proyecto,Refactor multi-tenant DB,489,125,failure
+8c013dc5,junior_juan,feature/pagos,Add login,276,65,failure
+8444d02b,carlos_dev,main,Refactor Docker config,311,73,failure
+cd769d8c,carlos_dev,main,Fix frontend UI,213,99,success
+058a4a4e,maria_backend,ci/cd-proyecto,Add multi-tenant DB,488,51,failure
+f2bd5f6a,ANNDREW492,hotfix/urgente,Fix multi-tenant DB,408,34,failure
+481c420f,maria_backend,main,Add Docker config,487,105,success
+4b8adf53,ANNDREW492,feature/pagos,Update multi-tenant DB,188,129,success
+39be5396,junior_juan,main,Refactor frontend UI,488,50,failure
+43228d9e,ANNDREW492,hotfix/urgente,Update login,149,95,failure
+bfdaede9,ANNDREW492,hotfix/urgente,Add API routes,134,125,success
+67586110,junior_juan,ci/cd-proyecto,Refactor API routes,6,75,success
+836a9622,junior_juan,feature/pagos,Remove API routes,197,46,success
