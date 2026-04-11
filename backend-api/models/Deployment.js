@@ -27,9 +27,13 @@ const deploymentSchema = new mongoose.Schema({
   timestamp: {
     type: Date,
     required: true
+  },
+  errorLog: {
+    type: String,
+    default: null
   }
 }, {
-  timestamps: true // Esto agrega automáticamente 'createdAt' y 'updatedAt'
+  timestamps: true
 });
 
 module.exports = mongoose.model('Deployment', deploymentSchema);

@@ -14,7 +14,7 @@ app.use(express.json());
 //MongoDB Atlas
 connectDB();
 
-// 2. Ruta POST: Recibe el webhook de GitHub y lo guarda en la base de datos
+// Recibir webhook de GitHub y guardarlo en base de datos
 app.post('/api/webhooks/ci-logs', async (req, res) => {
     try {
         const logData = req.body;
@@ -27,12 +27,14 @@ app.post('/api/webhooks/ci-logs', async (req, res) => {
             branch: logData.branch,
             status: logData.status,
             actor: logData.actor,
-            timestamp: logData.timestamp || new Date()
+            timestamp: logData.timestamp || new Date(),
+            //se guarda el log, Si fue exitoso, llegará null o vacío.
+            errorLog: logData.error_log 
         });
 
-        //Se guarda en MongoDB
+        //MongoDB
         await newDeployment.save();
-        console.log('Log guardado en MongoDB');
+        console.log('Log guardado en MongoDB exitosamente.');
         
         res.status(200).json({ message: 'Log recibido y guardado correctamente' });
     } catch (error) {
@@ -41,15 +43,31 @@ app.post('/api/webhooks/ci-logs', async (req, res) => {
     }
 });
 
-// Ruta GET para los logs y mostrar en las tablas/gráficas
+//mostrar en las tablas/gráficas
 app.get('/api/logs', async (req, res) => {
     try {
-        // orden descendente por fecha
         const logs = await Deployment.find().sort({ timestamp: -1 });
         res.json(logs);
     } catch (error) {
         console.error('Error al obtener los logs:', error);
         res.status(500).json({ error: 'Hubo un error obteniendo los datos' });
+    }
+});
+
+// despliegue específico ID de Mongo (vista de IA)
+app.get('/api/logs/:id', async (req, res) => {
+    try {
+        const logId = req.params.id;
+        const log = await Deployment.findById(logId);
+        
+        if (!log) {
+            return res.status(404).json({ error: 'Despliegue no encontrado' });
+        }
+        
+        res.json(log);
+    } catch (error) {
+        console.error('Error al buscar el log específico:', error);
+        res.status(500).json({ error: 'Error en el servidor al consultar la base de datos' });
     }
 });
 
