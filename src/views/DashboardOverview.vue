@@ -86,11 +86,21 @@
           <ul class="activity-list">
             <li v-for="log in recentLogs" :key="log._id" class="activity-item">
               <div :class="['status-indicator', log.status.toLowerCase()]"></div>
-              <div class="activity-details">
-                <span class="commit-hash">{{ log.commit.substring(0, 7) }}</span>
-                <span class="branch-name">{{ log.branch }}</span>
-                <span class="time-ago">{{ formatTime(log.timestamp) }}</span>
+              
+              <div class="activity-content-wrapper">
+                <div class="activity-details">
+                  <span class="commit-hash">{{ log.commit.substring(0, 7) }}</span>
+                  <span class="branch-name">{{ log.branch }}</span>
+                  <span class="time-ago">{{ formatTime(log.timestamp) }}</span>
+                </div>
+                
+                <div v-if="log.status !== 'success'" class="action-wrapper">
+                  <button class="btn-diagnose" @click="goToAiAnalysis(log)">
+                    Diagnosticar Falla
+                  </button>
+                </div>
               </div>
+
             </li>
             <li v-if="recentLogs.length === 0 && !loading" class="empty-state">
               No hay despliegues recientes.
@@ -104,7 +114,9 @@
 </template>
 
 <script setup>
+/* Añadimos useRouter de vue-router */
 import { ref, computed, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import VChart from 'vue-echarts';
@@ -112,29 +124,27 @@ import { use } from 'echarts/core';
 import { GaugeChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
 
-/* Inyección de ECharts y Chart.js */
 use([GaugeChart, CanvasRenderer]);
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
+const router = useRouter();
 const tenantName = ref('Digital Buho S.A.C.');
 
 const logs = ref([]);
 const loading = ref(true);
 const error = ref(null);
 
-/* --- NUEVO: LÓGICA DE RAMAS --- */
 const selectedBranch = ref('all');
 
 const availableBranches = computed(() => {
   const branches = logs.value.map(log => log.branch);
-  return [...new Set(branches)]; // Elimina nombres duplicados
+  return [...new Set(branches)];
 });
 
 const filteredLogsByBranch = computed(() => {
   if (selectedBranch.value === 'all') return logs.value;
   return logs.value.filter(log => log.branch === selectedBranch.value);
 });
-/* ------------------------------ */
 
 const fetchMetrics = async () => {
   loading.value = true;
@@ -151,7 +161,6 @@ const fetchMetrics = async () => {
   }
 };
 
-/* Ahora los cálculos se basan en la rama filtrada, no en el total general */
 const totalDeployments = computed(() => filteredLogsByBranch.value.length);
 const successDeployments = computed(() => filteredLogsByBranch.value.filter(l => l.status === 'success').length);
 const failedDeployments = computed(() => filteredLogsByBranch.value.filter(l => l.status !== 'success').length);
@@ -161,11 +170,10 @@ const successRate = computed(() => {
   return Math.round((successDeployments.value / totalDeployments.value) * 100);
 });
 
-/* --- NUEVO: CONFIGURACIÓN DEL GAUGE --- */
 const gaugeOption = computed(() => {
-  let color = '#10b981'; // Verde (Éxito alto)
-  if (successRate.value < 70) color = '#ef4444'; // Rojo (Peligro)
-  else if (successRate.value < 90) color = '#f59e0b'; // Naranja (Advertencia)
+  let color = '#10b981'; 
+  if (successRate.value < 70) color = '#ef4444'; 
+  else if (successRate.value < 90) color = '#f59e0b'; 
 
   return {
     series: [
@@ -178,18 +186,9 @@ const gaugeOption = computed(() => {
         min: 0,
         max: 100,
         splitNumber: 2,
-        axisLine: {
-          lineStyle: {
-            width: 15,
-            color: [[1, '#e2e8f0']]
-          }
-        },
-        progress: {
-          show: true,
-          width: 15,
-          itemStyle: { color: color }
-        },
-        pointer: { show: false }, // Sin aguja para un look más minimalista
+        axisLine: { lineStyle: { width: 15, color: [[1, '#e2e8f0']] } },
+        progress: { show: true, width: 15, itemStyle: { color: color } },
+        pointer: { show: false },
         axisTick: { show: false },
         splitLine: { show: false },
         axisLabel: { show: false },
@@ -206,7 +205,6 @@ const gaugeOption = computed(() => {
     ]
   };
 });
-/* -------------------------------------- */
 
 const recentLogs = computed(() => filteredLogsByBranch.value.slice(0, 5));
 
@@ -257,12 +255,22 @@ const chartOptions = {
   scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
 };
 
+/* --- NUEVO: Función de redirección con parámetros --- */
+const goToAiAnalysis = (log) => {
+  // Redirigimos a la vista de IA pasando el ID del log en la URL
+  router.push({ 
+    path: '/ai-analysis', 
+    query: { logId: log._id } 
+  });
+};
+
 onMounted(() => {
   fetchMetrics();
 });
 </script>
 
 <style scoped>
+/* (Mantén el resto de tus variables CSS intactas) */
 .dashboard-container {
   --color-primary: #3b82f6;
   --color-success: #10b981;
@@ -279,278 +287,81 @@ onMounted(() => {
   color: var(--color-text-main);
 }
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-}
-
-.title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0;
-}
-
-.subtitle {
-  color: var(--color-text-muted);
-  font-size: 0.95rem;
-  margin: 4px 0 0 0;
-}
-
-/* Estilos Selector de Ramas */
-.header-actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
-.branch-selector {
-  padding: 8px 16px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-bg-card);
-  color: var(--color-text-main);
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  outline: none;
-}
-
-.branch-selector:focus {
-  border-color: var(--color-primary);
-}
-
-.btn-refresh {
-  background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  color: var(--color-text-main);
-  font-weight: 500;
-  transition: all 0.2s ease;
-}
-
-.btn-refresh:hover:not(:disabled) {
-  background-color: #f8fafc;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-}
-
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  margin-bottom: 24px;
-}
-
-.kpi-card {
-  background: var(--color-bg-card);
-  padding: 24px;
-  border-radius: 12px;
-  border: 1px solid var(--color-border);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.kpi-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-}
-
-.kpi-header {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0;
-}
-
-.kpi-value {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--color-text-main);
-  line-height: 1;
-}
-
+.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+.title { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; margin: 0; }
+.subtitle { color: var(--color-text-muted); font-size: 0.95rem; margin: 4px 0 0 0; }
+.header-actions { display: flex; gap: 12px; align-items: center; }
+.branch-selector { padding: 8px 16px; border-radius: 6px; border: 1px solid var(--color-border); background-color: var(--color-bg-card); color: var(--color-text-main); font-size: 0.9rem; font-weight: 500; cursor: pointer; outline: none; }
+.branch-selector:focus { border-color: var(--color-primary); }
+.btn-refresh { background-color: var(--color-bg-card); border: 1px solid var(--color-border); padding: 8px 16px; border-radius: 6px; cursor: pointer; color: var(--color-text-main); font-weight: 500; transition: all 0.2s ease; }
+.btn-refresh:hover:not(:disabled) { background-color: #f8fafc; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 24px; }
+.kpi-card { background: var(--color-bg-card); padding: 24px; border-radius: 12px; border: 1px solid var(--color-border); box-shadow: 0 1px 2px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 8px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+.kpi-header { font-size: 0.8rem; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin: 0; }
+.kpi-value { font-size: 2.5rem; font-weight: 700; color: var(--color-text-main); line-height: 1; }
 .success-card .kpi-value { color: var(--color-success); }
 .danger-card .kpi-value { color: var(--color-danger); }
-
-/* Ajustes Visuales para la Tarjeta Gauge */
-.gauge-card {
-  padding-bottom: 10px;
-}
-
-.gauge-wrapper {
-  height: 110px;
-  width: 100%;
-  margin-top: -10px;
-}
-
-.chart {
-  height: 100%;
-  width: 100%;
-}
-
-.gauge-value {
-  margin-top: -55px;
-  text-align: center;
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--color-text-main);
-}
-
-.main-content-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 24px;
-}
-
-@media (max-width: 768px) {
-  .main-content-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.panel {
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-}
-
-.panel-header-with-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.panel-title {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.time-selector {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid var(--color-border);
-  background-color: transparent;
-  color: var(--color-text-main);
-  font-size: 0.85rem;
-  font-weight: 500;
-  cursor: pointer;
-  outline: none;
-}
-
-.time-selector:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-}
-
-.chart-wrapper {
-  height: 300px;
-  position: relative;
-}
-
-.empty-chart {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-muted);
-}
-
-.side-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.ai-widget {
-  background: #f8fafc;
-}
-
-.ai-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.ai-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--color-ai);
-  box-shadow: 0 0 8px var(--color-ai);
-}
-
-.ai-header .panel-title { 
-  margin: 0; 
-  color: var(--color-text-main);
-}
-
-.ai-text {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: var(--color-text-muted);
-  margin-bottom: 16px;
-}
-
-.ai-link {
-  font-size: 0.85rem;
-  color: var(--color-ai);
-  text-decoration: none;
-  font-weight: 600;
-  transition: opacity 0.2s;
-}
-
+.gauge-card { padding-bottom: 10px; }
+.gauge-wrapper { height: 110px; width: 100%; margin-top: -10px; }
+.chart { height: 100%; width: 100%; }
+.gauge-value { margin-top: -55px; text-align: center; font-size: 1rem; font-weight: 500; color: var(--color-text-main); }
+.main-content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+@media (max-width: 768px) { .main-content-grid { grid-template-columns: 1fr; } }
+.panel { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+.panel-header-with-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.panel-title { margin: 0; font-size: 1.1rem; font-weight: 600; letter-spacing: -0.01em; }
+.time-selector { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--color-border); background-color: transparent; color: var(--color-text-main); font-size: 0.85rem; font-weight: 500; cursor: pointer; outline: none; }
+.time-selector:focus { border-color: var(--color-primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
+.chart-wrapper { height: 300px; position: relative; }
+.empty-chart { height: 100%; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); }
+.side-section { display: flex; flex-direction: column; gap: 24px; }
+.ai-widget { background: #f8fafc; }
+.ai-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.ai-indicator { width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-ai); box-shadow: 0 0 8px var(--color-ai); }
+.ai-header .panel-title { margin: 0; color: var(--color-text-main); }
+.ai-text { font-size: 0.9rem; line-height: 1.6; color: var(--color-text-muted); margin-bottom: 16px; }
+.ai-link { font-size: 0.85rem; color: var(--color-ai); text-decoration: none; font-weight: 600; transition: opacity 0.2s; }
 .ai-link:hover { opacity: 0.8; }
-
-.activity-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.activity-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
+.activity-list { list-style: none; padding: 0; margin: 0; }
+.activity-item { display: flex; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
 .activity-item:last-child { border-bottom: none; }
-
-.status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-top: 6px;
-  margin-right: 12px;
-  flex-shrink: 0;
-  background-color: var(--color-text-muted);
-}
-
+.status-indicator { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; margin-right: 12px; flex-shrink: 0; background-color: var(--color-text-muted); }
 .status-indicator.success { background-color: var(--color-success); }
 .status-indicator.failure { background-color: var(--color-danger); }
 
-.activity-details {
+.activity-content-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  width: 100%;
+  gap: 8px;
 }
 
+.activity-details { display: flex; flex-direction: column; gap: 2px; }
 .commit-hash { font-family: ui-monospace, monospace; font-weight: 600; font-size: 0.9rem; color: var(--color-text-main); }
 .branch-name { font-size: 0.8rem; color: var(--color-text-muted); }
 .time-ago { font-size: 0.75rem; color: #94a3b8; margin-top: 2px; }
+
+.action-wrapper {
+  margin-top: 4px;
+}
+
+.btn-diagnose {
+  background-color: rgba(99, 102, 241, 0.1);
+  color: var(--color-ai);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.btn-diagnose:hover {
+  background-color: var(--color-ai);
+  color: white;
+}
 </style>
