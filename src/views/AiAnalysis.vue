@@ -47,7 +47,7 @@
           @click="analyzeWithAI" 
           :disabled="loading || fetchLoading || !errorLog || !repository"
         >
-          <span v-if="loading" class="spinner">✨ Consultando al modelo...</span>
+          <span v-if="loading" class="spinner">Consultando al modelo...</span>
           <span v-else>Analizar Error con IA</span>
         </button>
 
@@ -57,7 +57,7 @@
       </div>
 
       <div class="panel result-panel">
-        <h3 class="panel-title">Diagnóstico de Ingeniería</h3>
+        <h3 class="panel-title">Diagnóstico</h3>
         
         <div v-if="loading || fetchLoading" class="skeleton-loader">
           <div class="line"></div>

@@ -69,17 +69,8 @@
       </div>
 
       <div class="side-section">
-        
-        <div class="ai-widget panel">
-          <div class="ai-header">
-            <div class="ai-indicator"></div>
-            <h3 class="panel-title">Análisis Predictivo</h3>
-          </div>
-          <p class="ai-text">
-            El modelo estima un <strong>riesgo bajo</strong> para los próximos despliegues en la rama <code>{{ selectedBranch === 'all' ? 'general' : selectedBranch }}</code> basado en la estabilidad reciente.
-          </p>
-          <router-link to="/ai-analysis" class="ai-link">Ver detalles del modelo →</router-link>
-        </div>
+
+        <PredictorRiesgo />
 
         <div class="recent-activity panel">
           <h3 class="panel-title">Actividad Reciente</h3>
@@ -123,6 +114,7 @@ import VChart from 'vue-echarts';
 import { use } from 'echarts/core';
 import { GaugeChart } from 'echarts/charts';
 import { CanvasRenderer } from 'echarts/renderers';
+import PredictorRiesgo from '../components/PredictorRiesgo.vue';
 
 use([GaugeChart, CanvasRenderer]);
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
