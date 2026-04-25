@@ -4,7 +4,7 @@
       <div class="icon-pulse"></div>
       <h3 class="titulo-panel">Motor de Riesgo Predictivo</h3>
     </div>
-    <p class="subtitle">Evaluación de parámetros de despliegue mediante Random Forest</p>
+    <p class="subtitle">Evaluación de parámetros de despliegue mediante CatBoost</p>
     
     <div class="formulario-grid">
       

@@ -19,27 +19,45 @@ for (let i = 0; i < 2000; i++) {
     const diaSemana = Math.floor(Math.random() * 7) + 1; 
     const horaDia = Math.floor(Math.random() * 24);
 
-    // Lógica aprendizaje automático simple para simular fallos:
-    let status = 'success';
-    let failProbability = 0.05; // 5% base de fallo
+    // Lógica probabilística más orgánica para simular fallos.
+    // Escala de riesgo base y ajustes por contexto (sin reglas totalmente rígidas).
+    let failProbability = 0.12;
 
-    // Reglas más estrictas y deterministas
-    if (linesChanged > 300) failProbability += 0.45;
-    if (branch === 'hotfix/urgente') failProbability += 0.40;
-    if (actor === 'junior_juan') failProbability += 0.35;
-    if (diaSemana >= 5 && horaDia >= 16) failProbability += 0.30;
+    // Riesgo por actor
+    if (actor === 'junior_juan') failProbability += 0.18;
+    if (actor === 'carlos_dev') failProbability += 0.05;
+    if (actor === 'maria_backend') failProbability -= 0.03;
+    if (actor === 'ANNDREW492') failProbability -= 0.05;
 
-    
-    if (failProbability >= 0.85) {
-        status = 'failure';
-    } else if (failProbability <= 0.10) {
-        status = 'success';
-    } else {
-        // La "suerte" solo se aplica en los casos dudosos intermedios
-        if (Math.random() < failProbability) {
-            status = 'failure';
-        }
-    }
+    // Riesgo por rama
+    if (branch === 'hotfix/urgente') failProbability += 0.22;
+    if (branch === 'feature/pagos') failProbability += 0.07;
+    if (branch === 'ci/cd-proyecto') failProbability += 0.10;
+    if (branch === 'main') failProbability -= 0.02;
+
+    // Riesgo continuo por tamaño y duración de ejecución
+    failProbability += Math.min(linesChanged / 900, 0.28);
+    failProbability += Math.min(execTime / 500, 0.15);
+
+    // Ventana de despliegue (6,7 = fin de semana en este dataset)
+    const isWeekend = diaSemana >= 6;
+    const isNight = horaDia >= 20 || horaDia <= 5;
+    if (isWeekend) failProbability += 0.12;
+    if (isNight) failProbability += 0.10;
+    if (isWeekend && isNight) failProbability += 0.08;
+
+    // Interacciones para casos más realistas
+    if (branch === 'hotfix/urgente' && linesChanged > 350) failProbability += 0.12;
+    if (actor === 'junior_juan' && branch === 'hotfix/urgente') failProbability += 0.10;
+    if (actor === 'ANNDREW492' && branch === 'main' && linesChanged < 120 && !isNight) failProbability -= 0.10;
+
+    // Ruido moderado para evitar dataset demasiado perfecto
+    failProbability += (Math.random() - 0.5) * 0.08;
+
+    // Limitar probabilidad a un rango válido
+    failProbability = Math.max(0.01, Math.min(0.99, failProbability));
+
+    const status = Math.random() < failProbability ? 'failure' : 'success';
 
     const hash = Math.random().toString(16).substring(2, 10);
     

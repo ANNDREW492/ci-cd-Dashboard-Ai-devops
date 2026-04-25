@@ -10,8 +10,8 @@
       "start:backend": "cd backend-api && node server.js",
       "start:frontend": "vite",
       "start:smee": "npx smee-client -u https://smee.io/UrIlzQgJBK8Fkqv0 -p 3000 -P /api/webhooks/ci-logs",
-      "start:ai": "cd ai-service && .\\venv\\Scripts\\activate && uvicorn main:app --reload",
-      "dev:all": "concurrently -c \"cyan,magenta,yellow,green\" -n \"BACKEND,FRONTEND,WEBHOOK,AI-CERBR\" \"npm run start:backend\" \"npm run start:frontend\" \"npm run start:smee\" \"npm run start:ai\""
+      "start:ai": "cd ai-service && .\\venv\\Scripts\\python -m uvicorn main:app --reload",
+      "dev:all": "concurrently --restart-tries 3 --restart-after 2000 -c \"cyan,magenta,yellow,green\" -n \"BACKEND,FRONTEND,WEBHOOK,AI-CERBR\" \"npm run start:backend\" \"npm run start:frontend\" \"npm run start:smee\" \"npm run start:ai\""
     },
   "dependencies": {
     "chart.js": "^4.5.1",

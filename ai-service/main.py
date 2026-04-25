@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 from openai import OpenAI
-import joblib
 import pandas as pd
+from catboost import CatBoostClassifier
 
 # Creación del app de FastAPI
 app = FastAPI(
@@ -32,18 +32,15 @@ except Exception as e:
     client = None
     ai_status = "Desconectado (Falta API Key válida en .env)"
 
-# CARGA DEL MODELO MACHINE LEARNING (KAGGLE) 
-MODEL_PATH = "random_forest_despliegues.pkl"
+# CARGA DEL MODELO MACHINE LEARNING (KAGGLE)
+MODEL_PATH = "catboost_despliegues.cbm"
 if os.path.exists(MODEL_PATH):
-    modelo_riesgo = joblib.load(MODEL_PATH)
-    ml_status = "Modelo ML Cargado"
+    modelo_riesgo = CatBoostClassifier()
+    modelo_riesgo.load_model(MODEL_PATH)
+    ml_status = "Modelo CatBoost Cargado"
 else:
     modelo_riesgo = None
-    ml_status = "Desconectado (Falta el archivo .pkl)"
-
-# Diccionarios de traducción (Texto a Números)
-MAPEO_ACTOR = {'ANNDREW492': 0, 'carlos_dev': 1, 'junior_juan': 2, 'maria_backend': 3}
-MAPEO_BRANCH = {'ci/cd-proyecto': 0, 'feature/pagos': 1, 'hotfix/urgente': 2, 'main': 3}
+    ml_status = "Desconectado (Falta el archivo .cbm)"
 
 # ESTRUCTURAS DE DATOS
 class LogAnalysisRequest(BaseModel):
@@ -99,30 +96,30 @@ def analyze_log_with_llm(request: LogAnalysisRequest):
 
 @app.post("/api/predict-risk")
 def predict_deployment_risk(request: RiskPredictionRequest):
-    """ Predicción Predictiva con Machine Learning (Random Forest) """
+    """ Predicción de riesgo con CatBoost """
     if modelo_riesgo is None:
-        raise HTTPException(status_code=500, detail="El modelo ML no está cargado en el servidor.")
+        raise HTTPException(status_code=500, detail="El modelo CatBoost no está cargado en el servidor.")
 
     try:
-        # 1. Traducir textos a números
-        actor_num = MAPEO_ACTOR.get(request.actor, 1) # Default a carlos_dev
-        branch_num = MAPEO_BRANCH.get(request.branch, 0) # Default a ci/cd-proyecto
+        actor = request.actor.strip().lower()
+        branch = request.branch.strip().lower()
+        is_weekend = 1 if request.dia_semana in [6, 7] else 0
+        lines_per_min = request.lines_changed / ((request.execution_time_seg / 60) + 1e-6)
 
-        # 2. Construir la tabla de entrada para el modelo
+        # CatBoost usa exactamente las features con las que se entrenó en Kaggle.
         datos_entrada = pd.DataFrame([{
-            'actor_num': actor_num,
-            'branch_num': branch_num,
+            'actor': actor,
+            'branch': branch,
             'lines_changed': request.lines_changed,
             'execution_time_seg': request.execution_time_seg,
             'dia_semana': request.dia_semana,
-            'hora_dia': request.hora_dia
+            'hora_dia': request.hora_dia,
+            'is_weekend': is_weekend,
+            'lines_per_min': lines_per_min
         }])
 
-        # 3. Predecir probabilidad
-        probabilidades = modelo_riesgo.predict_proba(datos_entrada)[0]
-        prob_fallo = float(probabilidades[1]) * 100
+        prob_fallo = float(modelo_riesgo.predict_proba(datos_entrada)[0][1]) * 100
 
-        # 4. Clasificar Riesgo
         veredicto = "Seguro"
         if prob_fallo >= 75:
             veredicto = "Peligro Crítico"
@@ -137,4 +134,4 @@ def predict_deployment_risk(request: RiskPredictionRequest):
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error en predicción ML: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error en predicción CatBoost: {str(e)}")
