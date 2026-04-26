@@ -108,6 +108,7 @@
 /* Añadimos useRouter de vue-router */
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { api } from '../services/apiClient';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import VChart from 'vue-echarts';
@@ -142,12 +143,13 @@ const fetchMetrics = async () => {
   loading.value = true;
   error.value = null;
   try {
-    const response = await fetch('http://localhost:3000/api/logs');
-    if (!response.ok) throw new Error('Error al conectar con el servidor de telemetría.');
-    const data = await response.json();
+    console.log('[DashboardOverview] Cargando logs...');
+    const data = await api.getLogs();
     logs.value = Array.isArray(data) ? data : [];
+    console.log('[DashboardOverview] ✓ Logs cargados:', logs.value.length);
   } catch (err) {
-    error.value = err.message;
+    error.value = `Error: ${err.message}`;
+    console.error('[DashboardOverview] ✗ Error cargando logs:', err);
   } finally {
     loading.value = false;
   }

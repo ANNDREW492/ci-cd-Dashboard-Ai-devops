@@ -80,6 +80,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { api } from '../services/apiClient';
 
 const route = useRoute();
 
@@ -108,12 +109,9 @@ onMounted(async () => {
 // Función pextraer repositorios únicos de la BD
 const loadAvailableRepositories = async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/logs');
-    if (response.ok) {
-      const data = await response.json();
-      const repos = data.map(log => log.repository);
-      availableRepositories.value = [...new Set(repos)];
-    }
+    const data = await api.getLogs();
+    const repos = data.map(log => log.repository);
+    availableRepositories.value = [...new Set(repos)];
   } catch (err) {
     console.error("Error al cargar la lista de repositorios:", err);
   }
@@ -122,10 +120,7 @@ const loadAvailableRepositories = async () => {
 const loadLogFromDatabase = async (id) => {
   fetchLoading.value = true;
   try {
-    const response = await fetch(`http://localhost:3000/api/logs/${id}`);
-    if (!response.ok) throw new Error('No se pudo recuperar el log de la base de datos.');
-    
-    const data = await response.json();
+    const data = await api.getLog(id);
     
     // Al setear el value aquí, el <select> se actualiza automáticamente a la opción correcta
     repository.value = data.repository;

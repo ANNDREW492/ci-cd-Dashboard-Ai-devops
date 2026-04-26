@@ -106,7 +106,7 @@ def predict_deployment_risk(request: RiskPredictionRequest):
         is_weekend = 1 if request.dia_semana in [6, 7] else 0
         lines_per_min = request.lines_changed / ((request.execution_time_seg / 60) + 1e-6)
 
-        # CatBoost usa exactamente las features con las que se entrenó en Kaggle.
+        # mismas features 
         datos_entrada = pd.DataFrame([{
             'actor': actor,
             'branch': branch,

@@ -1,5 +1,8 @@
 <template>
-  <div class="layout">
+  <div v-if="isLoginPage" class="full-view">
+    <router-view></router-view>
+  </div>
+  <div v-else class="layout">
     <aside class="sidebar">
       <div class="sidebar-brand">AI-DevOps</div>
 
@@ -52,6 +55,16 @@
             <span>Configuración</span>
           </router-link>
         </li>
+        <li style="border-top: 1px solid #e2e2e2; margin-top: 10px;">
+          <button @click="handleLogout" class="menu-link menu-logout" style="width: 100%; text-align: left; border: none; background: none; cursor: pointer;">
+            <span class="menu-icon icon-logout" aria-hidden="true" style="color: #d32f2f; background: #ffebee;">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M17 16l4-4m0 0l-4-4m4 4H7m6-12H7a2 2 0 00-2 2v12a2 2 0 002 2h6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </span>
+            <span>Cerrar Sesión</span>
+          </button>
+        </li>
       </ul>
     </aside>
 
@@ -61,7 +74,28 @@
   </div>
 </template>
 
+<script setup>
+import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
+import { clearAuth } from './services/apiClient';
+
+const router = useRouter();
+const route = useRoute();
+const isLoginPage = computed(() => route.path === '/login');
+
+const handleLogout = () => {
+  clearAuth();
+  router.push('/login');
+};
+</script>
+
 <style>
+.full-view {
+  width: 100%;
+  height: 100vh;
+}
+
 body {
   margin: 0;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;

@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+import { api } from '../services/apiClient';
 
 const pipelineLogs = ref([]);
 
@@ -27,12 +28,7 @@ const getStatus = (log) => {
 
 onMounted(async () => {
   try {
-    const response = await fetch('http://localhost:3000/api/logs');
-    if (!response.ok) {
-      throw new Error(`Error HTTP: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await api.getLogs();
     pipelineLogs.value = Array.isArray(data) ? data : [];
   } catch (error) {
     console.error('Error al obtener logs del pipeline:', error);
