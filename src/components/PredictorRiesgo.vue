@@ -11,20 +11,18 @@
       <div class="form-group">
         <label> Perfil del Desarrollador</label>
         <select v-model="form.actor" class="custom-select">
-          <option value="ANNDREW492">ANNDREW492 (Historial: Senior / Alta Tasa Éxito)</option>
-          <option value="maria_backend">maria_backend (Historial: Senior / Backend)</option>
-          <option value="carlos_dev">carlos_dev (Historial: Mid / Fullstack)</option>
-          <option value="junior_juan">junior_juan (Historial: Junior / Riesgo Moderado)</option>
+          <option v-for="actor in actors" :key="actor" :value="actor">
+            {{ actor }}
+          </option>
         </select>
       </div>
 
       <div class="form-group">
         <label> Rama de Destino</label>
         <select v-model="form.branch" class="custom-select">
-          <option value="main">main (Entorno de Producción)</option>
-          <option value="feature/pagos">feature/pagos (Aislamiento)</option>
-          <option value="ci/cd-proyecto">ci/cd-proyecto (Infraestructura)</option>
-          <option value="hotfix/urgente">hotfix/urgente (Alta Prioridad)</option>
+          <option v-for="branch in branches" :key="branch" :value="branch">
+            {{ branch }}
+          </option>
         </select>
       </div>
 
@@ -82,7 +80,6 @@
             <li v-if="form.lines_changed > 300"> Volumen masivo de código aumenta inestabilidad.</li>
             <li v-if="form.dia_semana >= 5 && form.hora_dia >= 16"> Riesgo extremo: Despliegue en fin de semana/noche.</li>
             <li v-if="form.branch === 'hotfix/urgente'"> Despliegue rápido en rama crítica.</li>
-            <li v-if="form.actor === 'junior_juan'"> El historial del autor requiere revisión por pares.</li>
             <li v-if="form.lines_changed <= 50 && form.dia_semana < 5"> Ventana de tiempo y volumen óptimos.</li>
           </ul>
         </div>
@@ -92,16 +89,20 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { api } from '../services/apiClient';
 
 const diasSemana = [
   { label: 'Lu', value: 1 }, { label: 'Ma', value: 2 }, { label: 'Mi', value: 3 },
   { label: 'Ju', value: 4 }, { label: 'Vi', value: 5 }, { label: 'Sa', value: 6 }, { label: 'Do', value: 7 }
 ];
 
+const actors = ref(['ANNDREW492', 'maria_backend', 'carlos_dev', 'junior_juan']);
+const branches = ref(['main', 'feature/pagos', 'ci/cd-proyecto', 'hotfix/urgente']);
+
 const form = ref({
-  actor: 'ANNDREW492',
-  branch: 'main',
+  actor: actors.value[0],
+  branch: branches.value[0],
   lines_changed: 120,
   execution_time_seg: 35, 
   dia_semana: 3, 
@@ -117,23 +118,40 @@ const horaFormateada = computed({
 const resultado = ref(null);
 const cargando = ref(false);
 
+onMounted(async () => {
+  try {
+    const options = await api.getMlOptions();
+    if (Array.isArray(options.actors) && options.actors.length > 0) {
+      actors.value = options.actors;
+    }
+    if (Array.isArray(options.branches) && options.branches.length > 0) {
+      branches.value = options.branches;
+    }
+
+    if (options.defaults) {
+      form.value = {
+        ...form.value,
+        ...options.defaults
+      };
+    } else {
+      form.value.actor = actors.value[0] || form.value.actor;
+      form.value.branch = branches.value[0] || form.value.branch;
+    }
+  } catch (error) {
+    console.error('No se pudieron cargar opciones dinámicas de ML:', error);
+  }
+});
+
 const evaluarRiesgo = async () => {
   cargando.value = true;
   resultado.value = null;
 
   try {
-    const response = await fetch('http://localhost:8000/api/predict-risk', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form.value)
-    });
-
-    if (!response.ok) throw new Error('Fallo al conectar');
-    resultado.value = await response.json();
+    resultado.value = await api.predictRisk(form.value);
     
   } catch (error) {
     console.error(error);
-    alert('Error conectando con la IA de FastAPI.');
+    alert('Error conectando con el servicio de predicción.');
   } finally {
     cargando.value = false;
   }

@@ -154,10 +154,10 @@ export const api = {
   /**
    * Analizar log con IA semántica
    */
-  analyzeLog: (logContent) =>
+  analyzeLog: ({ error_log, repository }) =>
     apiCall('/api/analyze-log', {
       method: 'POST',
-      body: JSON.stringify({ log_content: logContent }),
+      body: JSON.stringify({ error_log, repository }),
     }),
 
   // RISK PREDICTION (Protegido)
@@ -170,6 +170,9 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  // Opciones dinámicas para formularios ML
+  getMlOptions: () => apiCall('/api/ml/options'),
 };
 
 export default api;

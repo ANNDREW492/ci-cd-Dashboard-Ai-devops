@@ -149,20 +149,10 @@ const analyzeWithAI = async () => {
   aiResult.value = '';
 
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/analyze-log', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        error_log: errorLog.value,
-        repository: repository.value
-      })
+    const data = await api.analyzeLog({
+      error_log: errorLog.value,
+      repository: repository.value
     });
-
-    if (!response.ok) throw new Error('Error al comunicarse con el Cerebro de IA.');
-
-    const data = await response.json();
     aiResult.value = data.analysis;
     
   } catch (err) {

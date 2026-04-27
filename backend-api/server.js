@@ -3,36 +3,29 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const connectDB = require('./config/db'); //conexión a MongoDB
-const Deployment = require('./models/Deployment'); // Importa el modelo de datos
+const connectDB = require('./config/db');
+const Deployment = require('./models/Deployment');
 
 const app = express();
 
-// Middlewares
 app.use(cors());
 app.use(express.json());
 
-//MongoDB Atlas
 connectDB();
 
-//JWT Configuracion
 const JWT_SECRET = process.env.JWT_SECRET || 'tu-super-secreto-cambiar-en-produccion';
-const JWT_EXPIRY = '24h';
+const JWT_EXPIRY = process.env.JWT_EXPIRY || '24h';
+const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
 
-// Credenciales por defecto (cambiar en producción o usar base de datos)
+// Credenciales demo internas (migrar a DB/SSO cuando empresa lo autorice)
 const VALID_USERS = [
   { email: 'admin@example.com', password: 'admin123' },
   { email: 'developer@example.com', password: 'dev123' }
 ];
 
-//Middleware de Autenticación 
-/**
- * Verifica que el JWT sea válido en el header Authorization
- * Formato: Authorization: Bearer <token>
- */
 function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({ error: 'No token provided' });
@@ -47,13 +40,6 @@ function authenticateToken(req, res, next) {
   });
 }
 
-//Auth Endpoints
-
-/**
- * POST /api/auth/login
- * Body: { email: string, password: string }
- * Response: { token: string, user: { email, expiresIn } }
- */
 app.post('/api/auth/login', (req, res) => {
   try {
     const { email, password } = req.body;
@@ -62,14 +48,12 @@ app.post('/api/auth/login', (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
 
-    // Validar credenciales (en producción, usar base de datos con contraseñas hasheadas)
-    const user = VALID_USERS.find(u => u.email === email && u.password === password);
+    const user = VALID_USERS.find((u) => u.email === email && u.password === password);
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // Generar JWT
     const token = jwt.sign(
       { email: user.email, iat: Math.floor(Date.now() / 1000) },
       JWT_SECRET,
@@ -89,71 +73,134 @@ app.post('/api/auth/login', (req, res) => {
   }
 });
 
-// Protected Routes
-
-// Recibir webhook de GitHub y guardarlo en base de datos
-// (Esta ruta NO requiere autenticación, recibe webhooks directamente de GitHub)
+// Ruta pública para recibir webhooks de CI/CD
 app.post('/api/webhooks/ci-logs', async (req, res) => {
-    try {
-        const logData = req.body;
-        console.log('Nuevo webhook recibido desde GitHub, commit:', logData.commit);
-        
-        //pipeline del job3
-        const newDeployment = new Deployment({
-            repository: logData.repository,
-            commit: logData.commit,
-            branch: logData.branch,
-            status: logData.status,
-            actor: logData.actor,
-            timestamp: logData.timestamp || new Date(),
-            //se guarda el log, Si fue exitoso, llegará null o vacío.
-            errorLog: logData.error_log 
-        });
+  try {
+    const logData = req.body;
 
-        //MongoDB
-        await newDeployment.save();
-        console.log('Log guardado en MongoDB exitosamente.');
-        
-        res.status(200).json({ message: 'Log recibido y guardado correctamente' });
-    } catch (error) {
-        console.error('Error al guardar el webhook:', error);
-        res.status(500).json({ error: 'Hubo un error guardando el log en la BD' });
-    }
+    const newDeployment = new Deployment({
+      repository: logData.repository,
+      commit: logData.commit,
+      branch: logData.branch,
+      status: logData.status,
+      actor: logData.actor,
+      timestamp: logData.timestamp || new Date(),
+      errorLog: logData.error_log || null
+    });
+
+    await newDeployment.save();
+    res.status(200).json({ message: 'Log recibido y guardado correctamente' });
+  } catch (error) {
+    console.error('Error al guardar el webhook:', error);
+    res.status(500).json({ error: 'Hubo un error guardando el log en la BD' });
+  }
 });
 
-// Protected: Get all logs 
 app.get('/api/logs', authenticateToken, async (req, res) => {
-    try {
-        const logs = await Deployment.find().sort({ timestamp: -1 });
-        res.json(logs);
-    } catch (error) {
-        console.error('Error al obtener los logs:', error);
-        res.status(500).json({ error: 'Hubo un error obteniendo los datos' });
-    }
+  try {
+    const logs = await Deployment.find().sort({ timestamp: -1 });
+    res.json(logs);
+  } catch (error) {
+    console.error('Error al obtener los logs:', error);
+    res.status(500).json({ error: 'Hubo un error obteniendo los datos' });
+  }
 });
 
-// Protected: Get specific log by ID
 app.get('/api/logs/:id', authenticateToken, async (req, res) => {
-    try {
-        const logId = req.params.id;
-        const log = await Deployment.findById(logId);
-        
-        if (!log) {
-            return res.status(404).json({ error: 'Despliegue no encontrado' });
-        }
-        
-        res.json(log);
-    } catch (error) {
-        console.error('Error al buscar el log específico:', error);
-        res.status(500).json({ error: 'Error en el servidor al consultar la base de datos' });
+  try {
+    const log = await Deployment.findById(req.params.id);
+
+    if (!log) {
+      return res.status(404).json({ error: 'Despliegue no encontrado' });
     }
+
+    res.json(log);
+  } catch (error) {
+    console.error('Error al buscar el log específico:', error);
+    res.status(500).json({ error: 'Error en el servidor al consultar la base de datos' });
+  }
 });
 
-//  Health Check 
+// Opciones dinámicas para el widget de riesgo (sin hardcode en frontend)
+app.get('/api/ml/options', authenticateToken, async (req, res) => {
+  try {
+    const actorsFromDb = await Deployment.distinct('actor');
+    const branchesFromDb = await Deployment.distinct('branch');
+
+    const fallbackActors = ['ANNDREW492', 'maria_backend', 'carlos_dev', 'junior_juan'];
+    const fallbackBranches = ['main', 'feature/pagos', 'ci/cd-proyecto', 'hotfix/urgente'];
+
+    res.json({
+      actors: actorsFromDb.length > 0 ? actorsFromDb : fallbackActors,
+      branches: branchesFromDb.length > 0 ? branchesFromDb : fallbackBranches,
+      defaults: {
+        actor: actorsFromDb[0] || fallbackActors[0],
+        branch: branchesFromDb[0] || fallbackBranches[0],
+        lines_changed: 120,
+        execution_time_seg: 35,
+        dia_semana: 3,
+        hora_dia: 10
+      }
+    });
+  } catch (error) {
+    console.error('Error al obtener opciones de ML:', error);
+    res.status(500).json({ error: 'No se pudieron obtener opciones de ML' });
+  }
+});
+
+// Proxy protegido a FastAPI para diagnóstico IA
+app.post('/api/analyze-log', authenticateToken, async (req, res) => {
+  try {
+    const { error_log, repository } = req.body;
+
+    if (!error_log || !repository) {
+      return res.status(400).json({ error: 'error_log y repository son obligatorios' });
+    }
+
+    const aiResponse = await fetch(`${AI_SERVICE_URL}/api/analyze-log`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error_log, repository })
+    });
+
+    const payload = await aiResponse.json();
+    if (!aiResponse.ok) {
+      return res.status(aiResponse.status).json(payload);
+    }
+
+    res.json(payload);
+  } catch (error) {
+    console.error('Error al contactar AI service (analyze-log):', error);
+    res.status(502).json({ error: 'No se pudo contactar al servicio de IA' });
+  }
+});
+
+// Proxy protegido a FastAPI para predicción ML
+app.post('/api/predict-risk', authenticateToken, async (req, res) => {
+  try {
+    const aiResponse = await fetch(`${AI_SERVICE_URL}/api/predict-risk`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req.body)
+    });
+
+    const payload = await aiResponse.json();
+    if (!aiResponse.ok) {
+      return res.status(aiResponse.status).json(payload);
+    }
+
+    res.json(payload);
+  } catch (error) {
+    console.error('Error al contactar AI service (predict-risk):', error);
+    res.status(502).json({ error: 'No se pudo contactar al servicio de IA' });
+  }
+});
+
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Backend de CI/CD Dashboard funcionando y conectado',
-    auth: 'JWT required for /api/logs endpoints',
+    auth: 'JWT required for /api/* excepto webhook/login',
+    ai_service_url: AI_SERVICE_URL,
     demo_credentials: {
       email: 'admin@example.com',
       password: 'admin123'
@@ -161,17 +208,15 @@ app.get('/', (req, res) => {
   });
 });
 
-//  Debug: Verify authentication 
 app.get('/api/auth/verify', authenticateToken, (req, res) => {
-  res.json({ 
+  res.json({
     message: 'Token válido',
     user: req.user,
     timestamp: new Date().toISOString()
   });
 });
 
-//servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`API Backend ejecutándose en http://localhost:${PORT}`);
+  console.log(`API Backend ejecutándose en http://localhost:${PORT}`);
 });
