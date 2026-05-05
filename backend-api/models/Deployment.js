@@ -18,7 +18,7 @@ const deploymentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    required: true // Ej: 'success', 'failure'
+    required: true
   },
   actor: {
     type: String,

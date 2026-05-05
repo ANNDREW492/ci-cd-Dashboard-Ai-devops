@@ -13,7 +13,7 @@ app.use(express.json());
 
 connectDB();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'tu-super-secreto-cambiar-en-produccion';
+const JWT_SECRET = process.env.JWT_SECRET || 'secret-cambiar-produccion';
 const JWT_EXPIRY = process.env.JWT_EXPIRY || '24h';
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://127.0.0.1:8000';
 
@@ -121,7 +121,7 @@ app.get('/api/logs/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Opciones dinámicas para el widget de riesgo (sin hardcode en frontend)
+// Opciones dinámicas para el widget de riesgo 
 app.get('/api/ml/options', authenticateToken, async (req, res) => {
   try {
     const actorsFromDb = await Deployment.distinct('actor');

@@ -66,6 +66,10 @@
         </div>
 
         <div v-else-if="aiResult" class="ai-response">
+          <div class="response-header">
+            <span class="response-mark"></span>
+            <span class="response-label">Diagnóstico generado</span>
+          </div>
           <p class="response-text">{{ aiResult }}</p>
         </div>
 
@@ -242,7 +246,33 @@ select.form-control { cursor: pointer; appearance: auto; }
 .result-panel { background-color: #f8fafc; }
 .empty-state { flex-grow: 1; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); font-size: 0.95rem; text-align: center; padding: 40px; border: 2px dashed var(--color-border); border-radius: 8px; }
 
-.ai-response { background-color: white; padding: 20px; border-radius: 8px; border: 1px solid var(--color-border); border-left: 4px solid var(--color-ai); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+.ai-response {
+  background: linear-gradient(180deg, rgba(99, 102, 241, 0.04), rgba(255, 255, 255, 0.98) 32%);
+  padding: 18px 20px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+}
+.response-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.response-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-ai);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08);
+}
+.response-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
 .response-text { white-space: pre-line; line-height: 1.6; margin: 0; font-size: 0.95rem; color: #334155; }
 
 .skeleton-loader { display: flex; flex-direction: column; gap: 12px; }
