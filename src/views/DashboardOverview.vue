@@ -49,56 +49,54 @@
     </section>
 
     <section class="main-content-grid">
-      
-      <div class="chart-section panel">
-        <div class="panel-header-with-actions">
-          <h3 class="panel-title">Tendencia de Despliegues</h3>
-          <select v-model="timeRange" class="time-selector">
-            <option :value="7">Últimos 7 días</option>
-            <option :value="30">Últimos 30 días</option>
-            <option :value="90">Últimos 3 meses</option>
-          </select>
-        </div>
-        <div class="chart-wrapper">
-          <Line v-if="!loading && chartData.labels.length > 0" :data="chartData" :options="chartOptions" />
-          <div v-else class="empty-chart">
-            <span v-if="loading">Cargando gráfico...</span>
-            <span v-else>No hay datos suficientes en este rango.</span>
+      <div class="main-column">
+        <div class="chart-section panel">
+          <div class="panel-header-with-actions">
+            <h3 class="panel-title">Tendencia de Despliegues</h3>
+            <select v-model="timeRange" class="time-selector">
+              <option :value="7">Últimos 7 días</option>
+              <option :value="30">Últimos 30 días</option>
+              <option :value="90">Últimos 3 meses</option>
+            </select>
+          </div>
+          <div class="chart-wrapper">
+            <Line v-if="!loading && chartData.labels.length > 0" :data="chartData" :options="chartOptions" />
+            <div v-else class="empty-chart">
+              <span v-if="loading">Cargando gráfico...</span>
+              <span v-else>No hay datos suficientes en este rango.</span>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div class="side-section">
 
         <PredictorRiesgo />
+      </div>
 
-        <div class="recent-activity panel">
-          <h3 class="panel-title">Actividad Reciente</h3>
-          <ul class="activity-list">
-            <li v-for="log in recentLogs" :key="log._id" class="activity-item">
-              <div :class="['status-indicator', log.status.toLowerCase()]"></div>
-              
-              <div class="activity-content-wrapper">
-                <div class="activity-details">
-                  <span class="commit-hash">{{ log.commit.substring(0, 7) }}</span>
-                  <span class="branch-name">{{ log.branch }}</span>
-                  <span class="time-ago">{{ formatTime(log.timestamp) }}</span>
-                </div>
-                
-                <div v-if="log.status !== 'success'" class="action-wrapper">
-                  <button class="btn-diagnose" @click="goToAiAnalysis(log)">
-                    Diagnosticar Falla
-                  </button>
-                </div>
+      <div class="recent-activity panel">
+        <h3 class="panel-title">Actividad Reciente</h3>
+        <ul class="activity-list">
+          <li v-for="log in recentLogs" :key="log._id" class="activity-item">
+            <div :class="['status-indicator', log.status.toLowerCase()]"></div>
+
+            <div class="activity-content-wrapper">
+              <div class="activity-details">
+                <span class="commit-hash">{{ log.commit.substring(0, 7) }}</span>
+                <span class="branch-name">{{ log.branch }}</span>
+                <span class="branch-name">{{ log.event_type || 'push' }} · {{ log.risk_level || 'Sin predicción' }}</span>
+                <span class="time-ago">{{ formatTime(log.timestamp) }}</span>
               </div>
 
-            </li>
-            <li v-if="recentLogs.length === 0 && !loading" class="empty-state">
-              No hay despliegues recientes.
-            </li>
-          </ul>
-        </div>
+              <div class="action-wrapper">
+                <button class="btn-diagnose" @click="goToDetail(log)">
+                  Ver detalle
+                </button>
+              </div>
+            </div>
 
+          </li>
+          <li v-if="recentLogs.length === 0 && !loading" class="empty-state">
+            No hay despliegues recientes.
+          </li>
+        </ul>
       </div>
     </section>
   </div>
@@ -257,6 +255,9 @@ const goToAiAnalysis = (log) => {
     query: { logId: log._id } 
   });
 };
+const goToDetail = (log) => {
+  router.push({ path: `/deployments/${log._id}` });
+};
 
 onMounted(() => {
   fetchMetrics();
@@ -300,7 +301,8 @@ onMounted(() => {
 .gauge-wrapper { height: 110px; width: 100%; margin-top: -10px; }
 .chart { height: 100%; width: 100%; }
 .gauge-value { margin-top: -55px; text-align: center; font-size: 1rem; font-weight: 500; color: var(--color-text-main); }
-.main-content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+.main-content-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr); gap: 24px; align-items: start; }
+.main-column { display: flex; flex-direction: column; gap: 24px; }
 @media (max-width: 768px) { .main-content-grid { grid-template-columns: 1fr; } }
 .panel { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
 .panel-header-with-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
@@ -309,7 +311,6 @@ onMounted(() => {
 .time-selector:focus { border-color: var(--color-primary); box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1); }
 .chart-wrapper { height: 300px; position: relative; }
 .empty-chart { height: 100%; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted); }
-.side-section { display: flex; flex-direction: column; gap: 24px; }
 .ai-widget { background: #f8fafc; }
 .ai-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .ai-indicator { width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-ai); box-shadow: 0 0 8px var(--color-ai); }

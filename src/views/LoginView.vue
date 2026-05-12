@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-    <!-- Fondo animado con formas -->
+
     <div class="background-shapes">
       <div class="shape shape-1"></div>
       <div class="shape shape-2"></div>
@@ -9,7 +9,7 @@
       <div class="shape shape-5"></div>
     </div>
 
-    <!-- Contenido del login -->
+
     <div class="login-content">
       <h1 class="login-title">AI-DevOps</h1>
       
@@ -85,7 +85,7 @@ const handleLogin = async () => {
     setToken(data.token);
     setUser(data.user);
     
-    console.log('✓ Login exitoso, token guardado:', data.token.slice(0, 20) + '...');
+    console.log('Login exitoso, token guardado:', data.token.slice(0, 20) + '...');
     
     // Redirigir al dashboard
     router.push('/');

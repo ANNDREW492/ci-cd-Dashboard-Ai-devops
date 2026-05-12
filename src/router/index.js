@@ -28,6 +28,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/deployments/:id',
+    name: 'DeploymentDetail',
+    component: () => import('../views/DeploymentDetail.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/settings',
     name: 'Settings',
     component: () => import('../views/Settings.vue'),

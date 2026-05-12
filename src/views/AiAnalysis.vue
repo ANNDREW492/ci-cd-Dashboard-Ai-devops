@@ -126,7 +126,7 @@ const loadLogFromDatabase = async (id) => {
   try {
     const data = await api.getLog(id);
     
-    // Al setear el value aquí, el <select> se actualiza automáticamente a la opción correcta
+    // seleccion
     repository.value = data.repository;
     commitHash.value = data.commit;
     branchName.value = data.branch;

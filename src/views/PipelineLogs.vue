@@ -26,6 +26,18 @@ const getStatus = (log) => {
   return log?.status || log?.conclusion || 'unknown';
 };
 
+const getRiskProbability = (log) => {
+  if (log?.risk_probability === null || log?.risk_probability === undefined) {
+    return 'Sin predicción';
+  }
+
+  return `${Math.round(Number(log.risk_probability) * 100)}%`;
+};
+
+const getRiskLevel = (log) => {
+  return log?.risk_level || 'Sin predicción';
+};
+
 onMounted(async () => {
   try {
     const data = await api.getLogs();
@@ -50,17 +62,20 @@ onMounted(async () => {
         <thead>
           <tr>
             <th>Repositorio</th>
-            <th>Commit</th>
             <th>Rama</th>
+            <th>Evento</th>
             <th>Actor</th>
             <th>Estado</th>
+            <th>Riesgo</th>
+            <th>Probabilidad</th>
+            <th>Timestamp</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(log, index) in pipelineLogs" :key="index">
             <td>{{ getRepository(log) }}</td>
-            <td>{{ getCommit(log) }}</td>
             <td>{{ getBranch(log) }}</td>
+            <td>{{ log?.event_type || 'push' }}</td>
             <td>{{ getActor(log) }}</td>
             <td>
               <span
@@ -75,6 +90,9 @@ onMounted(async () => {
                 {{ getStatus(log) }}
               </span>
             </td>
+            <td>{{ getRiskLevel(log) }}</td>
+            <td>{{ getRiskProbability(log) }}</td>
+            <td>{{ log?.timestamp || 'N/A' }}</td>
           </tr>
         </tbody>
       </table>

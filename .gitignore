@@ -32,3 +32,5 @@ backend-api/.env
 # Python cache/artifacts
 __pycache__/
 *.py[cod]
+# Ignore CatBoost binary artifacts
+ai-service/*.cbm

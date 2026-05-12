@@ -2,38 +2,53 @@
   <div class="predictor-card">
     <div class="header-section">
       <div class="icon-pulse"></div>
-      <h3 class="titulo-panel">Motor de Riesgo Predictivo</h3>
+      <h3 class="titulo-panel">Indicador de Riesgo Operativo</h3>
     </div>
-    <p class="subtitle">Evaluación de parámetros de despliegue mediante CatBoost</p>
-    
+    <p class="subtitle">CatBoost v3 usa solo señales tempranas del pipeline. No evalúa personas.</p>
+
     <div class="formulario-grid">
-      
       <div class="form-group">
-        <label> Perfil del Desarrollador</label>
-        <select v-model="form.actor" class="custom-select">
-          <option v-for="actor in actors" :key="actor" :value="actor">
-            {{ actor }}
-          </option>
+        <label>Rama</label>
+        <select v-model="form.branch" class="custom-select">
+          <option v-for="branch in branches" :key="branch" :value="branch">{{ branch }}</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label> Rama de Destino</label>
-        <select v-model="form.branch" class="custom-select">
-          <option v-for="branch in branches" :key="branch" :value="branch">
-            {{ branch }}
-          </option>
+        <label>Tipo de evento</label>
+        <select v-model="form.event_type" class="custom-select">
+          <option v-for="eventType in eventTypes" :key="eventType" :value="eventType">{{ eventType }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Acción del commit</label>
+        <select v-model="form.commit_action" class="custom-select">
+          <option v-for="action in commitActions" :key="action" :value="action">{{ action }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Alcance del commit</label>
+        <select v-model="form.commit_scope" class="custom-select">
+          <option v-for="scope in commitScopes" :key="scope" :value="scope">{{ scope }}</option>
         </select>
       </div>
 
       <div class="form-group slider-group">
         <div class="label-row">
-          <label>Volumen de Modificación</label>
-          <span class="badge" :class="form.lines_changed > 300 ? 'badge-danger' : 'badge-safe'">
-            {{ form.lines_changed }} líneas
-          </span>
+          <label>Archivos modificados</label>
+          <span class="badge" :class="form.files_changed > 8 ? 'badge-danger' : 'badge-safe'">{{ form.files_changed }} archivos</span>
         </div>
-        <input type="range" v-model="form.lines_changed" min="1" max="1000" class="custom-slider">
+        <input type="range" v-model.number="form.files_changed" min="1" max="25" class="custom-slider">
+      </div>
+
+      <div class="form-group slider-group">
+        <div class="label-row">
+          <label>Líneas cambiadas</label>
+          <span class="badge" :class="form.lines_changed > 300 ? 'badge-danger' : 'badge-safe'">{{ form.lines_changed }} líneas</span>
+        </div>
+        <input type="range" v-model.number="form.lines_changed" min="1" max="1000" class="custom-slider">
         <div class="slider-markers">
           <span>Trivial</span>
           <span>Complejo</span>
@@ -42,19 +57,40 @@
       </div>
 
       <div class="form-group">
-        <label> Ventana de Despliegue (Día)</label>
+        <label>Líneas añadidas / eliminadas</label>
+        <div class="split-inputs">
+          <input v-model.number="form.lines_added" type="number" min="0" class="custom-time" placeholder="Añadidas">
+          <input v-model.number="form.lines_deleted" type="number" min="0" class="custom-time" placeholder="Eliminadas">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Día de despliegue</label>
         <div class="days-container">
-          <button v-for="(day, index) in diasSemana" :key="index" 
-                  @click="form.dia_semana = day.value"
-                  :class="['day-pill', form.dia_semana === day.value ? 'active' : '']">
+          <button v-for="day in diasSemana" :key="day.value" @click="form.dia_semana = day.value" :class="['day-pill', form.dia_semana === day.value ? 'active' : '']">
             {{ day.label }}
           </button>
         </div>
       </div>
 
       <div class="form-group">
-        <label> Hora del Despliegue</label>
+        <label>Hora de despliegue</label>
         <input type="time" v-model="horaFormateada" class="custom-time">
+      </div>
+
+      <div class="form-group">
+        <label>Tipo de rama</label>
+        <div class="branch-toggle-grid" role="radiogroup" aria-label="Tipo de rama">
+          <button
+            v-for="option in branchTypeOptions"
+            :key="option.key"
+            type="button"
+            @click="selectBranchType(option.key)"
+            :class="['branch-toggle', selectedBranchType === option.key ? 'active' : '']"
+          >
+            {{ option.label }}
+          </button>
+        </div>
       </div>
 
       <button @click="evaluarRiesgo" :disabled="cargando" class="btn-evaluar">
@@ -65,22 +101,21 @@
 
     <div v-if="resultado" class="resultado-panel" :class="claseAlerta">
       <div class="resultado-header">
-        <h4>Veredicto: {{ resultado.veredicto }}</h4>
+        <h4>{{ resultado.risk_level }} · {{ resultado.risk_decision }}</h4>
       </div>
-      
+
       <div class="resultado-body">
         <div class="score-circle">
-          <h1 class="porcentaje-texto">{{ Math.round(resultado.riesgo_porcentaje) }}<span class="percent">%</span></h1>
-          <span class="score-label">Riesgo</span>
+          <h1 class="porcentaje-texto">{{ Math.round((resultado.risk_probability || 0) * 100) }}<span class="percent">%</span></h1>
+          <span class="score-label">Riesgo operativo</span>
         </div>
-        
+
         <div class="factores-analisis">
-          <h5>Factores Detectados por la IA:</h5>
+          <h5>Mensaje clave</h5>
           <ul>
-            <li v-if="form.lines_changed > 300"> Volumen masivo de código aumenta inestabilidad.</li>
-            <li v-if="form.dia_semana >= 5 && form.hora_dia >= 16"> Riesgo extremo: Despliegue en fin de semana/noche.</li>
-            <li v-if="form.branch === 'hotfix/urgente'"> Despliegue rápido en rama crítica.</li>
-            <li v-if="form.lines_changed <= 50 && form.dia_semana < 5"> Ventana de tiempo y volumen óptimos.</li>
+            <li>CatBoost v3 funciona como alerta temprana de despliegue.</li>
+            <li>El umbral operativo es 0.45.</li>
+            <li>Si el servicio no responde, el deployment sigue guardado y la predicción queda como no disponible.</li>
           </ul>
         </div>
       </div>
@@ -89,7 +124,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { api } from '../services/apiClient';
 
 const diasSemana = [
@@ -97,22 +132,68 @@ const diasSemana = [
   { label: 'Ju', value: 4 }, { label: 'Vi', value: 5 }, { label: 'Sa', value: 6 }, { label: 'Do', value: 7 }
 ];
 
-const actors = ref(['ANNDREW492', 'maria_backend', 'carlos_dev', 'junior_juan']);
 const branches = ref(['main', 'feature/pagos', 'ci/cd-proyecto', 'hotfix/urgente']);
+const eventTypes = ref(['push', 'pull_request']);
+const commitActions = ref(['update', 'fix', 'add', 'refactor', 'merge', 'rollback']);
+const commitScopes = ref(['general', 'api', 'frontend', 'dashboard', 'docker', 'database']);
+const branchTypeOptions = [
+  { key: 'main', label: 'Main' },
+  { key: 'feature', label: 'Feature' },
+  { key: 'hotfix', label: 'Hotfix' }
+];
+
+const inferBranchType = (branch) => {
+  const normalized = String(branch || '').toLowerCase();
+  if (normalized.includes('hotfix')) return 'hotfix';
+  if (normalized.includes('feature')) return 'feature';
+  if (normalized === 'main') return 'main';
+  return 'feature';
+};
+
+const branchForType = (type) => {
+  const fallbackByType = {
+    main: 'main',
+    feature: 'feature/pagos',
+    hotfix: 'hotfix/urgente'
+  };
+
+  const candidate = branches.value.find((branch) => inferBranchType(branch) === type);
+  return candidate || fallbackByType[type] || branches.value[0];
+};
 
 const form = ref({
-  actor: actors.value[0],
   branch: branches.value[0],
-  lines_changed: 120,
-  execution_time_seg: 35, 
-  dia_semana: 3, 
-  hora_dia: 10 
+  event_type: eventTypes.value[0],
+  commit_action: commitActions.value[0],
+  commit_scope: commitScopes.value[0],
+  files_changed: 3,
+  lines_added: 50,
+  lines_deleted: 12,
+  lines_changed: 62,
+  dia_semana: 3,
+  hora_dia: 10,
+  is_hotfix_branch: false,
+  is_feature_branch: true,
+  is_main_branch: false
 });
 
-// Manejo visual de la hora
+const selectedBranchType = ref(inferBranchType(form.value.branch));
+
+const syncBranchFlags = (type) => {
+  form.value.is_hotfix_branch = type === 'hotfix';
+  form.value.is_feature_branch = type === 'feature';
+  form.value.is_main_branch = type === 'main';
+};
+
+const selectBranchType = (type) => {
+  selectedBranchType.value = type;
+  form.value.branch = branchForType(type);
+  syncBranchFlags(type);
+};
+
 const horaFormateada = computed({
-  get: () => `${form.value.hora_dia.toString().padStart(2, '0')}:00`,
-  set: (val) => { form.value.hora_dia = parseInt(val.split(':')[0]); }
+  get: () => `${String(form.value.hora_dia).padStart(2, '0')}:00`,
+  set: (val) => { form.value.hora_dia = parseInt(val.split(':')[0], 10); }
 });
 
 const resultado = ref(null);
@@ -121,26 +202,30 @@ const cargando = ref(false);
 onMounted(async () => {
   try {
     const options = await api.getMlOptions();
-    if (Array.isArray(options.actors) && options.actors.length > 0) {
-      actors.value = options.actors;
-    }
-    if (Array.isArray(options.branches) && options.branches.length > 0) {
-      branches.value = options.branches;
-    }
+    if (Array.isArray(options.branches) && options.branches.length > 0) branches.value = options.branches;
+    if (Array.isArray(options.eventTypes) && options.eventTypes.length > 0) eventTypes.value = options.eventTypes;
+    if (Array.isArray(options.commitActions) && options.commitActions.length > 0) commitActions.value = options.commitActions;
+    if (Array.isArray(options.commitScopes) && options.commitScopes.length > 0) commitScopes.value = options.commitScopes;
 
     if (options.defaults) {
-      form.value = {
-        ...form.value,
-        ...options.defaults
-      };
-    } else {
-      form.value.actor = actors.value[0] || form.value.actor;
-      form.value.branch = branches.value[0] || form.value.branch;
+      form.value = { ...form.value, ...options.defaults };
     }
+
+    selectedBranchType.value = inferBranchType(form.value.branch);
+    syncBranchFlags(selectedBranchType.value);
   } catch (error) {
     console.error('No se pudieron cargar opciones dinámicas de ML:', error);
   }
 });
+
+watch(
+  () => form.value.branch,
+  (branch) => {
+    const nextType = inferBranchType(branch);
+    selectedBranchType.value = nextType;
+    syncBranchFlags(nextType);
+  }
+);
 
 const evaluarRiesgo = async () => {
   cargando.value = true;
@@ -148,7 +233,6 @@ const evaluarRiesgo = async () => {
 
   try {
     resultado.value = await api.predictRisk(form.value);
-    
   } catch (error) {
     console.error(error);
     alert('Error conectando con el servicio de predicción.');
@@ -159,8 +243,9 @@ const evaluarRiesgo = async () => {
 
 const claseAlerta = computed(() => {
   if (!resultado.value) return '';
-  if (resultado.value.riesgo_porcentaje >= 75) return 'alerta-roja';
-  if (resultado.value.riesgo_porcentaje >= 40) return 'alerta-amarilla';
+  const probability = Number(resultado.value.risk_probability || 0);
+  if (probability >= 0.70) return 'alerta-roja';
+  if (probability >= 0.40) return 'alerta-amarilla';
   return 'alerta-verde';
 });
 </script>
@@ -199,48 +284,44 @@ label { font-size: 0.85rem; color: var(--color-text-main); font-weight: 600; dis
 .custom-select, .custom-time { background-color: #f8fafc; border: 1px solid var(--color-border); color: var(--color-text-main); padding: 10px; border-radius: 8px; font-size: 0.9rem; outline: none; transition: all 0.2s; }
 .custom-select:focus, .custom-time:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
 
-/* Slider Styling */
+.split-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .label-row { display: flex; justify-content: space-between; align-items: center; }
 .badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: 700; }
 .badge-safe { background: #e0f2fe; color: #0369a1; }
 .badge-danger { background: #fee2e2; color: #b91c1c; }
 .custom-slider { width: 100%; accent-color: var(--color-primary); cursor: pointer; }
 .slider-markers { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--color-text-muted); margin-top: -4px;}
-
-/* Days Pills */
 .days-container { display: flex; gap: 6px; justify-content: space-between; }
 .day-pill { flex: 1; padding: 8px 0; border: 1px solid var(--color-border); background: #f8fafc; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); transition: all 0.2s; }
 .day-pill:hover { border-color: var(--color-primary); }
 .day-pill.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
 
+.branch-toggle-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.branch-toggle { border: 1px solid var(--color-border); background: #f8fafc; color: var(--color-text-muted); padding: 10px 8px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.branch-toggle:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.branch-toggle.active { background: var(--color-primary); border-color: var(--color-primary); color: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
 .btn-evaluar { background-color: var(--color-text-main); color: #ffffff; border: none; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.2s; margin-top: 10px; display: flex; justify-content: center;}
 .btn-evaluar:hover:not(:disabled) { background-color: #1e293b; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
-/* Results */
 .resultado-panel { margin-top: 24px; border-radius: 12px; border: 2px solid var(--color-border); animation: slideDown 0.4s ease; overflow: hidden; }
 .resultado-header { padding: 12px; text-align: center; font-weight: 800; font-size: 1.1rem;}
 .resultado-body { padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: #fafafa;}
-
 .score-circle { width: 120px; height: 120px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: white; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 4px solid var(--color-border); }
 .porcentaje-texto { margin: 0; font-size: 2.5rem; font-weight: 900; line-height: 1; }
 .percent { font-size: 1.2rem; }
 .score-label { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--color-text-muted); }
-
 .factores-analisis { width: 100%; background: white; padding: 16px; border-radius: 8px; border: 1px solid var(--color-border); }
 .factores-analisis h5 { margin: 0 0 10px 0; font-size: 0.85rem; color: var(--color-text-muted); text-transform: uppercase; }
 .factores-analisis ul { margin: 0; padding-left: 0; list-style: none; font-size: 0.85rem; display: flex; flex-direction: column; gap: 8px; }
-
 .alerta-verde { border-color: var(--color-success); }
 .alerta-verde .resultado-header { background-color: #d1fae5; color: #065f46; }
 .alerta-verde .score-circle { border-color: var(--color-success); color: var(--color-success); }
-
 .alerta-amarilla { border-color: var(--color-warning); }
 .alerta-amarilla .resultado-header { background-color: #fef3c7; color: #92400e; }
 .alerta-amarilla .score-circle { border-color: var(--color-warning); color: var(--color-warning); }
-
 .alerta-roja { border-color: var(--color-danger); }
 .alerta-roja .resultado-header { background-color: #fee2e2; color: #991b1b; }
 .alerta-roja .score-circle { border-color: var(--color-danger); color: var(--color-danger); }
-
 @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 </style>

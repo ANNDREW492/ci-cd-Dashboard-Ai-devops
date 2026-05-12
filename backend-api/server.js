@@ -5,6 +5,17 @@ require('dotenv').config();
 
 const connectDB = require('./config/db');
 const Deployment = require('./models/Deployment');
+const {
+  EARLY_FEATURE_DEFAULTS,
+  buildCatboostPayload,
+  buildDeploymentRecord,
+  inferCommitAction,
+  inferCommitScope,
+  inferEventType,
+  inferTemporalFields,
+  normalizeString,
+  toNumber
+} = require('./services/featureExtractor');
 
 const app = express();
 
@@ -76,20 +87,74 @@ app.post('/api/auth/login', (req, res) => {
 // Ruta pública para recibir webhooks de CI/CD
 app.post('/api/webhooks/ci-logs', async (req, res) => {
   try {
-    const logData = req.body;
+    const logData = req.body || {};
+    const deploymentRecord = buildDeploymentRecord(logData);
+    const newDeployment = new Deployment(deploymentRecord);
+    await newDeployment.save();
 
-    const newDeployment = new Deployment({
-      repository: logData.repository,
-      commit: logData.commit,
-      branch: logData.branch,
-      status: logData.status,
-      actor: logData.actor,
-      timestamp: logData.timestamp || new Date(),
-      errorLog: logData.error_log || null
+    let prediction = null;
+    const predictionPayload = buildCatboostPayload({
+      ...logData,
+      branch: deploymentRecord.branch,
+      commit_message: deploymentRecord.commit_message,
+      event_type: deploymentRecord.event_type,
+      dia_semana: deploymentRecord.dia_semana,
+      hora_dia: deploymentRecord.hora_dia,
+      is_weekend: deploymentRecord.is_weekend,
+      is_hotfix_branch: deploymentRecord.is_hotfix_branch,
+      is_feature_branch: deploymentRecord.is_feature_branch,
+      is_main_branch: deploymentRecord.is_main_branch,
+      has_docker_change: deploymentRecord.has_docker_change,
+      has_db_change: deploymentRecord.has_db_change,
+      has_api_change: deploymentRecord.has_api_change,
+      has_frontend_change: deploymentRecord.has_frontend_change,
+      has_login_change: deploymentRecord.has_login_change,
+      has_dependency_change: deploymentRecord.has_dependency_change,
+      has_env_change: deploymentRecord.has_env_change,
+      has_migration_change: deploymentRecord.has_migration_change,
+      files_changed: deploymentRecord.files_changed,
+      lines_added: deploymentRecord.lines_added,
+      lines_deleted: deploymentRecord.lines_deleted,
+      lines_changed: deploymentRecord.lines_changed,
+      timestamp: deploymentRecord.timestamp
     });
 
-    await newDeployment.save();
-    res.status(200).json({ message: 'Log recibido y guardado correctamente' });
+    try {
+      const aiResponse = await fetch(`${AI_SERVICE_URL}/api/predict-risk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(predictionPayload)
+      });
+
+      if (aiResponse.ok) {
+        prediction = await aiResponse.json();
+      }
+    } catch (predictionError) {
+      console.warn('No se pudo consultar la predicción temprana:', predictionError.message);
+    }
+
+    if (prediction) {
+      await Deployment.findByIdAndUpdate(newDeployment._id, {
+        risk_probability: prediction.risk_probability,
+        risk_level: prediction.risk_level,
+        risk_decision: prediction.risk_decision,
+        model_version: prediction.model_version,
+        prediction_threshold: prediction.prediction_threshold,
+        prediction_timestamp: new Date(),
+        prediction_status: 'available'
+      });
+    } else {
+      await Deployment.findByIdAndUpdate(newDeployment._id, {
+        prediction_status: 'unavailable'
+      });
+    }
+
+    res.status(200).json({
+      message: 'Log recibido y guardado correctamente',
+      deploymentId: newDeployment._id,
+      prediction_status: prediction ? 'available' : 'unavailable',
+      prediction
+    });
   } catch (error) {
     console.error('Error al guardar el webhook:', error);
     res.status(500).json({ error: 'Hubo un error guardando el log en la BD' });
@@ -124,22 +189,44 @@ app.get('/api/logs/:id', authenticateToken, async (req, res) => {
 // Opciones dinámicas para el widget de riesgo 
 app.get('/api/ml/options', authenticateToken, async (req, res) => {
   try {
-    const actorsFromDb = await Deployment.distinct('actor');
     const branchesFromDb = await Deployment.distinct('branch');
+    const eventTypesFromDb = await Deployment.distinct('event_type');
+    const commitActionsFromDb = await Deployment.distinct('commit_action');
+    const commitScopesFromDb = await Deployment.distinct('commit_scope');
 
-    const fallbackActors = ['ANNDREW492', 'maria_backend', 'carlos_dev', 'junior_juan'];
     const fallbackBranches = ['main', 'feature/pagos', 'ci/cd-proyecto', 'hotfix/urgente'];
+    const fallbackEventTypes = ['push', 'pull_request'];
+    const fallbackCommitActions = ['update', 'fix', 'add', 'refactor', 'merge', 'rollback'];
+    const fallbackCommitScopes = ['general', 'api', 'frontend', 'dashboard', 'docker', 'database'];
 
     res.json({
-      actors: actorsFromDb.length > 0 ? actorsFromDb : fallbackActors,
       branches: branchesFromDb.length > 0 ? branchesFromDb : fallbackBranches,
+      eventTypes: eventTypesFromDb.length > 0 ? eventTypesFromDb : fallbackEventTypes,
+      commitActions: commitActionsFromDb.length > 0 ? commitActionsFromDb : fallbackCommitActions,
+      commitScopes: commitScopesFromDb.length > 0 ? commitScopesFromDb : fallbackCommitScopes,
       defaults: {
-        actor: actorsFromDb[0] || fallbackActors[0],
         branch: branchesFromDb[0] || fallbackBranches[0],
+        event_type: eventTypesFromDb[0] || fallbackEventTypes[0],
+        commit_action: commitActionsFromDb[0] || fallbackCommitActions[0],
+        commit_scope: commitScopesFromDb[0] || fallbackCommitScopes[0],
+        files_changed: EARLY_FEATURE_DEFAULTS.files_changed,
+        lines_added: EARLY_FEATURE_DEFAULTS.lines_added,
+        lines_deleted: EARLY_FEATURE_DEFAULTS.lines_deleted,
         lines_changed: 120,
-        execution_time_seg: 35,
-        dia_semana: 3,
-        hora_dia: 10
+        dia_semana: EARLY_FEATURE_DEFAULTS.dia_semana,
+        hora_dia: EARLY_FEATURE_DEFAULTS.hora_dia,
+        is_weekend: EARLY_FEATURE_DEFAULTS.is_weekend,
+        is_hotfix_branch: EARLY_FEATURE_DEFAULTS.is_hotfix_branch,
+        is_feature_branch: EARLY_FEATURE_DEFAULTS.is_feature_branch,
+        is_main_branch: EARLY_FEATURE_DEFAULTS.is_main_branch,
+        has_docker_change: EARLY_FEATURE_DEFAULTS.has_docker_change,
+        has_db_change: EARLY_FEATURE_DEFAULTS.has_db_change,
+        has_api_change: EARLY_FEATURE_DEFAULTS.has_api_change,
+        has_frontend_change: EARLY_FEATURE_DEFAULTS.has_frontend_change,
+        has_login_change: EARLY_FEATURE_DEFAULTS.has_login_change,
+        has_dependency_change: EARLY_FEATURE_DEFAULTS.has_dependency_change,
+        has_env_change: EARLY_FEATURE_DEFAULTS.has_env_change,
+        has_migration_change: EARLY_FEATURE_DEFAULTS.has_migration_change
       }
     });
   } catch (error) {
