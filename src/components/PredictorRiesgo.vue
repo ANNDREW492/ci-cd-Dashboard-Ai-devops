@@ -8,10 +8,8 @@
 
     <div class="formulario-grid">
       <div class="form-group">
-        <label>Rama</label>
-        <select v-model="form.branch" class="custom-select">
-          <option v-for="branch in branches" :key="branch" :value="branch">{{ branch }}</option>
-        </select>
+        <label>Rama activa</label>
+        <div class="branch-display">{{ form.branch || 'Sin rama disponible' }}</div>
       </div>
 
       <div class="form-group">
@@ -40,7 +38,7 @@
           <label>Archivos modificados</label>
           <span class="badge" :class="form.files_changed > 8 ? 'badge-danger' : 'badge-safe'">{{ form.files_changed }} archivos</span>
         </div>
-        <input type="range" v-model.number="form.files_changed" min="1" max="25" class="custom-slider">
+        <input type="range" v-model.number="form.files_changed" min="0" :max="sliderLimits.files_changed" :step="Math.max(1, Math.round(sliderLimits.files_changed / 25))" class="custom-slider">
       </div>
 
       <div class="form-group slider-group">
@@ -48,7 +46,7 @@
           <label>Líneas cambiadas</label>
           <span class="badge" :class="form.lines_changed > 300 ? 'badge-danger' : 'badge-safe'">{{ form.lines_changed }} líneas</span>
         </div>
-        <input type="range" v-model.number="form.lines_changed" min="1" max="1000" class="custom-slider">
+        <input type="range" v-model.number="form.lines_changed" min="0" :max="sliderLimits.lines_changed" :step="Math.max(5, Math.round(sliderLimits.lines_changed / 40))" class="custom-slider">
         <div class="slider-markers">
           <span>Trivial</span>
           <span>Complejo</span>
@@ -79,7 +77,7 @@
       </div>
 
       <div class="form-group">
-        <label>Tipo de rama</label>
+        <label>Familia de rama</label>
         <div class="branch-toggle-grid" role="radiogroup" aria-label="Tipo de rama">
           <button
             v-for="option in branchTypeOptions"
@@ -132,33 +130,61 @@ const diasSemana = [
   { label: 'Ju', value: 4 }, { label: 'Vi', value: 5 }, { label: 'Sa', value: 6 }, { label: 'Do', value: 7 }
 ];
 
-const branches = ref(['main', 'feature/pagos', 'ci/cd-proyecto', 'hotfix/urgente']);
-const eventTypes = ref(['push', 'pull_request']);
-const commitActions = ref(['update', 'fix', 'add', 'refactor', 'merge', 'rollback']);
-const commitScopes = ref(['general', 'api', 'frontend', 'dashboard', 'docker', 'database']);
-const branchTypeOptions = [
-  { key: 'main', label: 'Main' },
-  { key: 'feature', label: 'Feature' },
-  { key: 'hotfix', label: 'Hotfix' }
-];
+const branches = ref([]);
+const eventTypes = ref([]);
+const commitActions = ref([]);
+const commitScopes = ref([]);
+const sliderLimits = ref({ files_changed: 0, lines_changed: 0, lines_added: 0, lines_deleted: 0 });
 
-const inferBranchType = (branch) => {
+const inferBranchFamily = (branch) => {
   const normalized = String(branch || '').toLowerCase();
-  if (normalized.includes('hotfix')) return 'hotfix';
-  if (normalized.includes('feature')) return 'feature';
+  if (!normalized) return 'general';
   if (normalized === 'main') return 'main';
-  return 'feature';
+  if (normalized.includes('/')) return normalized.split('/')[0];
+  return normalized;
 };
 
-const branchForType = (type) => {
-  const fallbackByType = {
-    main: 'main',
-    feature: 'feature/pagos',
-    hotfix: 'hotfix/urgente'
+const branchTypeOptions = computed(() => {
+  const seen = new Set();
+  const options = [];
+
+  const formatLabel = (key) => {
+    if (key === 'main') return 'Main';
+    if (key === 'ci') return 'CI';
+    return key.charAt(0).toUpperCase() + key.slice(1);
   };
 
-  const candidate = branches.value.find((branch) => inferBranchType(branch) === type);
-  return candidate || fallbackByType[type] || branches.value[0];
+  for (const branch of branches.value) {
+    const key = inferBranchFamily(branch);
+    if (!seen.has(key)) {
+      seen.add(key);
+      options.push({ key, label: formatLabel(key) });
+    }
+  }
+
+  return options.sort((left, right) => {
+    const priority = { main: 0, hotfix: 1, feature: 2, release: 3, ci: 4 };
+    const leftPriority = priority[left.key] ?? 99;
+    const rightPriority = priority[right.key] ?? 99;
+
+    if (leftPriority !== rightPriority) {
+      return leftPriority - rightPriority;
+    }
+
+    return left.label.localeCompare(right.label);
+  });
+});
+
+const branchForType = (type) => {
+  const normalizedType = String(type || '').toLowerCase();
+  const candidate = branches.value.find((branch) => inferBranchFamily(branch) === normalizedType);
+
+  if (candidate) return candidate;
+
+  const prefixedCandidate = branches.value.find((branch) => String(branch || '').toLowerCase().startsWith(`${normalizedType}/`));
+  if (prefixedCandidate) return prefixedCandidate;
+
+  return branches.value[0];
 };
 
 const form = ref({
@@ -166,18 +192,18 @@ const form = ref({
   event_type: eventTypes.value[0],
   commit_action: commitActions.value[0],
   commit_scope: commitScopes.value[0],
-  files_changed: 3,
-  lines_added: 50,
-  lines_deleted: 12,
-  lines_changed: 62,
-  dia_semana: 3,
-  hora_dia: 10,
+  files_changed: 0,
+  lines_added: 0,
+  lines_deleted: 0,
+  lines_changed: 0,
+  dia_semana: 1,
+  hora_dia: 0,
   is_hotfix_branch: false,
-  is_feature_branch: true,
+  is_feature_branch: false,
   is_main_branch: false
 });
 
-const selectedBranchType = ref(inferBranchType(form.value.branch));
+const selectedBranchType = ref(inferBranchFamily(form.value.branch));
 
 const syncBranchFlags = (type) => {
   form.value.is_hotfix_branch = type === 'hotfix';
@@ -206,12 +232,13 @@ onMounted(async () => {
     if (Array.isArray(options.eventTypes) && options.eventTypes.length > 0) eventTypes.value = options.eventTypes;
     if (Array.isArray(options.commitActions) && options.commitActions.length > 0) commitActions.value = options.commitActions;
     if (Array.isArray(options.commitScopes) && options.commitScopes.length > 0) commitScopes.value = options.commitScopes;
+    if (options.limits) sliderLimits.value = { ...sliderLimits.value, ...options.limits };
 
     if (options.defaults) {
       form.value = { ...form.value, ...options.defaults };
     }
 
-    selectedBranchType.value = inferBranchType(form.value.branch);
+    selectedBranchType.value = inferBranchFamily(form.value.branch);
     syncBranchFlags(selectedBranchType.value);
   } catch (error) {
     console.error('No se pudieron cargar opciones dinámicas de ML:', error);
@@ -221,7 +248,7 @@ onMounted(async () => {
 watch(
   () => form.value.branch,
   (branch) => {
-    const nextType = inferBranchType(branch);
+    const nextType = inferBranchFamily(branch);
     selectedBranchType.value = nextType;
     syncBranchFlags(nextType);
   }
@@ -267,7 +294,7 @@ const claseAlerta = computed(() => {
   padding: 24px;
   color: var(--color-text-main);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  width: 100%;
+  width: 94%;
 }
 
 .header-section { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
@@ -283,6 +310,7 @@ label { font-size: 0.85rem; color: var(--color-text-main); font-weight: 600; dis
 
 .custom-select, .custom-time { background-color: #f8fafc; border: 1px solid var(--color-border); color: var(--color-text-main); padding: 10px; border-radius: 8px; font-size: 0.9rem; outline: none; transition: all 0.2s; }
 .custom-select:focus, .custom-time:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+.branch-display { background-color: #f8fafc; border: 1px solid var(--color-border); color: var(--color-text-main); padding: 10px; border-radius: 8px; font-size: 0.9rem; min-height: 42px; display: flex; align-items: center; }
 
 .split-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .label-row { display: flex; justify-content: space-between; align-items: center; }

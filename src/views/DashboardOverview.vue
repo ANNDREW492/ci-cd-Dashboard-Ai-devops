@@ -247,9 +247,8 @@ const chartOptions = {
   scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
 };
 
-/* --- NUEVO: Función de redirección con parámetros --- */
 const goToAiAnalysis = (log) => {
-  // Redirigimos a la vista de IA pasando el ID del log en la URL
+  
   router.push({ 
     path: '/ai-analysis', 
     query: { logId: log._id } 

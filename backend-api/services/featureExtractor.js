@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+
 const EARLY_FEATURE_DEFAULTS = {
   branch: 'main',
   event_type: 'push',
@@ -22,6 +25,89 @@ const EARLY_FEATURE_DEFAULTS = {
   has_env_change: 0,
   has_migration_change: 0
 };
+
+const MODEL_UI_PROFILE_PATH = path.join(__dirname, '..', 'model_ui_profile.json');
+
+function normalizeBranchFamily(branch) {
+  const normalized = normalizeString(branch, '').toLowerCase();
+
+  if (!normalized) {
+    return '';
+  }
+
+  if (normalized === 'main') {
+    return 'main';
+  }
+
+  if (normalized.includes('/')) {
+    return normalized.split('/')[0];
+  }
+
+  return normalized;
+}
+
+function loadModelUiProfile() {
+  const fallback = {
+    branches: [],
+    branchFamilies: [],
+    eventTypes: [],
+    commitActions: [],
+    commitScopes: [],
+    limits: {},
+  };
+
+  try {
+    if (!fs.existsSync(MODEL_UI_PROFILE_PATH)) {
+      return fallback;
+    }
+
+    const rawJson = fs.readFileSync(MODEL_UI_PROFILE_PATH, 'utf8').trim();
+    if (!rawJson) {
+      return fallback;
+    }
+
+    const parsedProfile = JSON.parse(rawJson);
+    const branchFamilies = Array.isArray(parsedProfile.branchFamilies) ? parsedProfile.branchFamilies : fallback.branchFamilies;
+    const familyOrder = new Map(branchFamilies.map((family, index) => [family, index]));
+    const compareFamilies = (left, right) => {
+      const leftOrder = familyOrder.has(left) ? familyOrder.get(left) : Number.MAX_SAFE_INTEGER;
+      const rightOrder = familyOrder.has(right) ? familyOrder.get(right) : Number.MAX_SAFE_INTEGER;
+
+      if (leftOrder !== rightOrder) {
+        return leftOrder - rightOrder;
+      }
+
+      return left.localeCompare(right);
+    };
+
+    const commitActions = Array.isArray(parsedProfile.commitActions) ? parsedProfile.commitActions : fallback.commitActions;
+    const commitScopes = Array.isArray(parsedProfile.commitScopes) ? parsedProfile.commitScopes : fallback.commitScopes;
+    const eventTypes = Array.isArray(parsedProfile.eventTypes) ? parsedProfile.eventTypes : fallback.eventTypes;
+    const branches = Array.isArray(parsedProfile.branches) ? parsedProfile.branches : fallback.branches;
+
+    return {
+      branches: branches.sort((left, right) => {
+        const leftFamily = normalizeBranchFamily(left);
+        const rightFamily = normalizeBranchFamily(right);
+
+        if (leftFamily !== rightFamily) {
+          return compareFamilies(leftFamily, rightFamily);
+        }
+
+        return left.localeCompare(right);
+      }),
+      branchFamilies: branchFamilies.slice(),
+      eventTypes: eventTypes.slice(),
+      commitActions: commitActions.slice(),
+      commitScopes: commitScopes.slice(),
+      limits: parsedProfile.limits && typeof parsedProfile.limits === 'object' ? parsedProfile.limits : fallback.limits,
+    };
+  } catch {
+    return fallback;
+  }
+}
+
+const MODEL_UI_PROFILE = loadModelUiProfile();
 
 const MODEL_COLUMNS = [
   'branch',
@@ -330,6 +416,7 @@ function buildDeploymentRecord(raw = {}, prediction = null) {
 
 module.exports = {
   EARLY_FEATURE_DEFAULTS,
+  MODEL_UI_PROFILE,
   MODEL_COLUMNS,
   buildCatboostPayload,
   buildDeploymentRecord,

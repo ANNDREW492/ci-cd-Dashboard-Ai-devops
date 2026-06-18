@@ -1,0 +1,54 @@
+{
+  "branches": [
+    "main",
+    "hotfix/urgente",
+    "feature/api",
+    "feature/dashboard",
+    "feature/pagos",
+    "release/v1",
+    "ci/cd-proyecto"
+  ],
+  "branchFamilies": [
+    "main",
+    "hotfix",
+    "feature",
+    "release",
+    "ci"
+  ],
+  "eventTypes": [
+    "pull_request",
+    "push"
+  ],
+  "commitActions": [
+    "update",
+    "fix",
+    "add",
+    "refactor",
+    "merge",
+    "rollback",
+    "remove"
+  ],
+  "commitScopes": [
+    "api",
+    "auth",
+    "billing",
+    "dashboard",
+    "database",
+    "dependencies",
+    "docker",
+    "environment",
+    "frontend",
+    "login",
+    "migration",
+    "security",
+    "tests"
+  ],
+  "limits": {
+    "files_changed": 27,
+    "lines_changed": 995,
+    "lines_added": 650,
+    "lines_deleted": 360,
+    "dia_semana": 7,
+    "hora_dia": 23
+  }
+}

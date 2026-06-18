@@ -7,6 +7,7 @@ const connectDB = require('./config/db');
 const Deployment = require('./models/Deployment');
 const {
   EARLY_FEATURE_DEFAULTS,
+  MODEL_UI_PROFILE,
   buildCatboostPayload,
   buildDeploymentRecord,
   inferCommitAction,
@@ -194,25 +195,22 @@ app.get('/api/ml/options', authenticateToken, async (req, res) => {
     const commitActionsFromDb = await Deployment.distinct('commit_action');
     const commitScopesFromDb = await Deployment.distinct('commit_scope');
 
-    const fallbackBranches = ['main', 'feature/pagos', 'ci/cd-proyecto', 'hotfix/urgente'];
-    const fallbackEventTypes = ['push', 'pull_request'];
-    const fallbackCommitActions = ['update', 'fix', 'add', 'refactor', 'merge', 'rollback'];
-    const fallbackCommitScopes = ['general', 'api', 'frontend', 'dashboard', 'docker', 'database'];
-
     res.json({
-      branches: branchesFromDb.length > 0 ? branchesFromDb : fallbackBranches,
-      eventTypes: eventTypesFromDb.length > 0 ? eventTypesFromDb : fallbackEventTypes,
-      commitActions: commitActionsFromDb.length > 0 ? commitActionsFromDb : fallbackCommitActions,
-      commitScopes: commitScopesFromDb.length > 0 ? commitScopesFromDb : fallbackCommitScopes,
+      branches: MODEL_UI_PROFILE.branches.length > 0 ? MODEL_UI_PROFILE.branches : branchesFromDb,
+      branchFamilies: MODEL_UI_PROFILE.branchFamilies,
+      eventTypes: MODEL_UI_PROFILE.eventTypes.length > 0 ? MODEL_UI_PROFILE.eventTypes : eventTypesFromDb,
+      commitActions: MODEL_UI_PROFILE.commitActions.length > 0 ? MODEL_UI_PROFILE.commitActions : commitActionsFromDb,
+      commitScopes: MODEL_UI_PROFILE.commitScopes.length > 0 ? MODEL_UI_PROFILE.commitScopes : commitScopesFromDb,
+      limits: MODEL_UI_PROFILE.limits,
       defaults: {
-        branch: branchesFromDb[0] || fallbackBranches[0],
-        event_type: eventTypesFromDb[0] || fallbackEventTypes[0],
-        commit_action: commitActionsFromDb[0] || fallbackCommitActions[0],
-        commit_scope: commitScopesFromDb[0] || fallbackCommitScopes[0],
+        branch: MODEL_UI_PROFILE.branches[0] || branchesFromDb[0],
+        event_type: MODEL_UI_PROFILE.eventTypes[0] || eventTypesFromDb[0],
+        commit_action: MODEL_UI_PROFILE.commitActions[0] || commitActionsFromDb[0],
+        commit_scope: MODEL_UI_PROFILE.commitScopes[0] || commitScopesFromDb[0],
         files_changed: EARLY_FEATURE_DEFAULTS.files_changed,
         lines_added: EARLY_FEATURE_DEFAULTS.lines_added,
         lines_deleted: EARLY_FEATURE_DEFAULTS.lines_deleted,
-        lines_changed: 120,
+        lines_changed: EARLY_FEATURE_DEFAULTS.lines_changed,
         dia_semana: EARLY_FEATURE_DEFAULTS.dia_semana,
         hora_dia: EARLY_FEATURE_DEFAULTS.hora_dia,
         is_weekend: EARLY_FEATURE_DEFAULTS.is_weekend,

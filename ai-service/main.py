@@ -35,28 +35,21 @@ except Exception as e:
     client = None
     ai_status = "Desconectado (Falta API Key válida en .env)"
 
-# CARGA DEL MODELO MACHINE LEARNING (CatBoost v3)
-# Leer rutas de modelo desde variables de entorno para flexibilidad en CI/producción.
-# Por defecto se mantiene el comportamiento anterior (archivo en el directorio del servicio).
-MODEL_PATH_V3 = os.getenv("CATBOOST_V3_PATH", "catboost_despliegues_v3.cbm")
-MODEL_PATH_LEGACY = os.getenv("CATBOOST_LEGACY_PATH", "catboost_despliegues.cbm")
+# CARGA DEL MODELO MACHINE LEARNING
+# El servicio usa un único artefacto activo de CatBoost y la ruta puede sobrescribirse por variable de entorno.
+MODEL_PATH = os.getenv("CATBOOST_MODEL_PATH", "catboost_despliegues_v3.cbm")
 
 modelo_riesgo = None
 model_version = "unknown"
 ml_status = "Modelo no cargado"
 try:
-    if os.path.exists(MODEL_PATH_V3):
+    if os.path.exists(MODEL_PATH):
         modelo_riesgo = CatBoostClassifier()
-        modelo_riesgo.load_model(MODEL_PATH_V3)
-        model_version = "catboost_v3"
-        ml_status = f"Modelo CatBoost v3 cargado desde: {MODEL_PATH_V3}"
-    elif os.path.exists(MODEL_PATH_LEGACY):
-        modelo_riesgo = CatBoostClassifier()
-        modelo_riesgo.load_model(MODEL_PATH_LEGACY)
-        model_version = "catboost_legacy"
-        ml_status = f"Modelo CatBoost legacy cargado desde: {MODEL_PATH_LEGACY}"
+        modelo_riesgo.load_model(MODEL_PATH)
+        model_version = "catboost_active"
+        ml_status = f"Modelo CatBoost cargado desde: {MODEL_PATH}"
     else:
-        ml_status = f"Desconectado (No existe {MODEL_PATH_V3} ni {MODEL_PATH_LEGACY})"
+        ml_status = f"Desconectado (No existe {MODEL_PATH})"
 except Exception as e:
     ml_status = f"Error cargando modelo: {str(e)}"
 
@@ -247,11 +240,11 @@ def build_model_features(payload: Dict[str, Any]) -> Dict[str, Any]:
     dia_semana = int(parsed_timestamp.dayofweek + 1)
     hora_dia = int(parsed_timestamp.hour)
     is_weekend = 1 if dia_semana >= 6 else 0
-    after_hours = 1 if hora_dia < 8 or hora_dia >= 18 else 0
-    work_hours = 1 - after_hours
-    high_change = 1 if lines_changed >= 250 else 0
-    very_high_change = 1 if lines_changed >= 600 else 0
-    many_files_changed = 1 if files_changed >= 8 else 0
+    after_hours = 1 if hora_dia < 8 or hora_dia >= 20 else 0
+    work_hours = 1 if 9 <= hora_dia <= 18 else 0
+    high_change = 1 if lines_changed >= 300 else 0
+    very_high_change = 1 if lines_changed >= 700 else 0
+    many_files_changed = 1 if files_changed >= 10 else 0
     critical_component_change = int(max(component_flags.values()))
     critical_high_change = 1 if critical_component_change and (high_change or very_high_change) else 0
     hotfix_high_change = 1 if branch_flags["is_hotfix_branch"] and (high_change or very_high_change) else 0
