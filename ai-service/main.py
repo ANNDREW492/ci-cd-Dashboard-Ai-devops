@@ -123,6 +123,14 @@ def to_int(value: Any, fallback: int = 0) -> int:
         return fallback
 
 
+def first_present(payload: Dict[str, Any], *keys: str, fallback: Any = None) -> Any:
+    for key in keys:
+        value = payload.get(key)
+        if value is not None:
+            return value
+    return fallback
+
+
 def infer_commit_action(commit_message: str, fallback: str = "update") -> str:
     text = normalize_string(commit_message, "").lower()
     if "rollback" in text:
@@ -204,17 +212,23 @@ def infer_branch_flags(payload: Dict[str, Any]) -> Dict[str, int]:
     }
 
 
-def infer_component_flags(commit_message: str, commit_scope: str) -> Dict[str, int]:
+def explicit_flag(payload: Dict[str, Any], key: str, fallback: int) -> int:
+    if payload.get(key) is not None:
+        return 1 if to_int(payload.get(key), 0) > 0 else 0
+    return fallback
+
+
+def infer_component_flags(commit_message: str, commit_scope: str, payload: Dict[str, Any]) -> Dict[str, int]:
     combined = f"{normalize_string(commit_message, '')} {normalize_string(commit_scope, '')}".lower()
     return {
-        "has_docker_change": 1 if "docker" in combined else 0,
-        "has_db_change": 1 if "db" in combined or "database" in combined else 0,
-        "has_api_change": 1 if "api" in combined else 0,
-        "has_frontend_change": 1 if "frontend" in combined or "ui" in combined or "dashboard" in combined else 0,
-        "has_login_change": 1 if "login" in combined or "signin" in combined or "auth" in combined else 0,
-        "has_dependency_change": 1 if "dependency" in combined or "dependencies" in combined or "package" in combined else 0,
-        "has_env_change": 1 if "env" in combined or "environment" in combined else 0,
-        "has_migration_change": 1 if "migration" in combined or "migrate" in combined else 0,
+        "has_docker_change": explicit_flag(payload, "has_docker_change", 1 if "docker" in combined else 0),
+        "has_db_change": explicit_flag(payload, "has_db_change", 1 if "db" in combined or "database" in combined else 0),
+        "has_api_change": explicit_flag(payload, "has_api_change", 1 if "api" in combined else 0),
+        "has_frontend_change": explicit_flag(payload, "has_frontend_change", 1 if "frontend" in combined or "ui" in combined or "dashboard" in combined else 0),
+        "has_login_change": explicit_flag(payload, "has_login_change", 1 if "login" in combined or "signin" in combined or "auth" in combined else 0),
+        "has_dependency_change": explicit_flag(payload, "has_dependency_change", 1 if "dependency" in combined or "dependencies" in combined or "package" in combined else 0),
+        "has_env_change": explicit_flag(payload, "has_env_change", 1 if "env" in combined or "environment" in combined else 0),
+        "has_migration_change": explicit_flag(payload, "has_migration_change", 1 if "migration" in combined or "migrate" in combined else 0),
     }
 
 
@@ -225,29 +239,34 @@ def build_model_features(payload: Dict[str, Any]) -> Dict[str, Any]:
     commit_action = normalize_string(payload.get("commit_action"), infer_commit_action(commit_message))
     commit_scope = infer_commit_scope({**payload, "commit_message": commit_message, "branch": branch})
     branch_flags = infer_branch_flags(payload)
-    component_flags = infer_component_flags(commit_message, commit_scope)
+    component_flags = infer_component_flags(commit_message, commit_scope, payload)
 
-    files_changed = max(0, to_int(payload.get("files_changed") or payload.get("changed_files") or payload.get("filesChanged"), 1))
-    lines_added = max(0, to_int(payload.get("lines_added") or payload.get("additions"), 0))
-    lines_deleted = max(0, to_int(payload.get("lines_deleted") or payload.get("deletions"), 0))
-    lines_changed = max(0, to_int(payload.get("lines_changed") or payload.get("changes"), lines_added + lines_deleted))
+    files_changed = max(0, to_int(first_present(payload, "files_changed", "changed_files", "filesChanged", fallback=1), 1))
+    lines_added = max(0, to_int(first_present(payload, "lines_added", "additions", fallback=0), 0))
+    lines_deleted = max(0, to_int(first_present(payload, "lines_deleted", "deletions", fallback=0), 0))
+    lines_changed = max(0, to_int(first_present(payload, "lines_changed", "changes", "total_changes", fallback=lines_added + lines_deleted), lines_added + lines_deleted))
 
-    timestamp_source = payload.get("timestamp") or payload.get("created_at") or payload.get("pushed_at")
-    parsed_timestamp = pd.to_datetime(timestamp_source, errors="coerce")
-    if pd.isna(parsed_timestamp):
-        parsed_timestamp = pd.Timestamp.utcnow()
+    if payload.get("dia_semana") is not None or payload.get("hora_dia") is not None:
+        dia_semana = max(1, min(7, to_int(payload.get("dia_semana"), 1)))
+        hora_dia = max(0, min(23, to_int(payload.get("hora_dia"), 10)))
+        is_weekend = 1 if to_int(payload.get("is_weekend"), 1 if dia_semana >= 6 else 0) > 0 else 0
+    else:
+        timestamp_source = payload.get("timestamp") or payload.get("created_at") or payload.get("pushed_at")
+        parsed_timestamp = pd.to_datetime(timestamp_source, errors="coerce")
+        if pd.isna(parsed_timestamp):
+            parsed_timestamp = pd.Timestamp.utcnow()
 
-    dia_semana = int(parsed_timestamp.dayofweek + 1)
-    hora_dia = int(parsed_timestamp.hour)
-    is_weekend = 1 if dia_semana >= 6 else 0
+        dia_semana = int(parsed_timestamp.dayofweek + 1)
+        hora_dia = int(parsed_timestamp.hour)
+        is_weekend = 1 if dia_semana >= 6 else 0
     after_hours = 1 if hora_dia < 8 or hora_dia >= 20 else 0
     work_hours = 1 if 9 <= hora_dia <= 18 else 0
     high_change = 1 if lines_changed >= 300 else 0
     very_high_change = 1 if lines_changed >= 700 else 0
     many_files_changed = 1 if files_changed >= 10 else 0
     critical_component_change = int(max(component_flags.values()))
-    critical_high_change = 1 if critical_component_change and (high_change or very_high_change) else 0
-    hotfix_high_change = 1 if branch_flags["is_hotfix_branch"] and (high_change or very_high_change) else 0
+    critical_high_change = critical_component_change * high_change
+    hotfix_high_change = branch_flags["is_hotfix_branch"] * high_change
     main_push = 1 if branch_flags["is_main_branch"] and event_type == "push" else 0
     weekend_after_hours = 1 if is_weekend and after_hours else 0
     lines_per_file = round(lines_changed / files_changed, 4) if files_changed > 0 else 0
@@ -306,7 +325,7 @@ def build_prediction_response(probability: float) -> Dict[str, Any]:
         "risk_probability": round(probability, 4),
         "risk_level": level,
         "risk_decision": decision,
-        "model_version": model_version if model_version != "unknown" else "catboost_v3",
+        "model_version": model_version if model_version != "unknown" else "catboost_active",
         "prediction_threshold": 0.45,
     }
 
@@ -351,7 +370,7 @@ def analyze_log_with_llm(request: LogAnalysisRequest):
 
 @app.post("/api/predict-risk")
 def predict_deployment_risk(request: Dict[str, Any]):
-    """ Predicción de riesgo con CatBoost v3 usando variables tempranas """
+    """ Predicción de riesgo con el modelo activo usando variables tempranas """
     if modelo_riesgo is None:
         raise HTTPException(status_code=503, detail="El modelo CatBoost no está cargado en el servidor.")
 

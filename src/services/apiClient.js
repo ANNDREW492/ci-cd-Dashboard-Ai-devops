@@ -97,7 +97,13 @@ export async function apiCall(endpoint, options = {}) {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       console.error(`[API] Error ${response.status}:`, error);
-      throw new Error(error.error || `HTTP ${response.status}`);
+      const detail =
+        typeof error.detail === 'string'
+          ? error.detail
+          : error.detail
+            ? JSON.stringify(error.detail)
+            : '';
+      throw new Error([error.error || `HTTP ${response.status}`, detail].filter(Boolean).join(': '));
     }
 
     const data = await response.json();
@@ -173,6 +179,32 @@ export const api = {
 
   // Opciones dinámicas para formularios ML
   getMlOptions: () => apiCall('/api/ml/options'),
+
+  getMlConfig: () => apiCall('/api/ml/config'),
+
+  saveMlConfig: (data) =>
+    apiCall('/api/ml/config', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  exportMlDataset: (data = {}) =>
+    apiCall('/api/ml/export', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  testS3: () =>
+    apiCall('/api/ml/s3/test', {
+      method: 'POST',
+      body: JSON.stringify({}),
+    }),
+
+  triggerTraining: (data = {}) =>
+    apiCall('/api/ml/trigger-train', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
 };
 
 export default api;

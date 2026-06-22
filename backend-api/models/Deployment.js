@@ -188,6 +188,15 @@ const deploymentSchema = new mongoose.Schema({
     default: 'unavailable',
     trim: true
   },
+  exported: {
+    type: Boolean,
+    default: false
+  },
+  export_batch_id: {
+    type: String,
+    default: null,
+    trim: true
+  },
   timestamp: {
     type: Date,
     required: true

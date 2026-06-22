@@ -50,6 +50,7 @@ function loadModelUiProfile() {
   const fallback = {
     branches: [],
     branchFamilies: [],
+    componentOptions: [],
     eventTypes: [],
     commitActions: [],
     commitScopes: [],
@@ -84,6 +85,7 @@ function loadModelUiProfile() {
     const commitScopes = Array.isArray(parsedProfile.commitScopes) ? parsedProfile.commitScopes : fallback.commitScopes;
     const eventTypes = Array.isArray(parsedProfile.eventTypes) ? parsedProfile.eventTypes : fallback.eventTypes;
     const branches = Array.isArray(parsedProfile.branches) ? parsedProfile.branches : fallback.branches;
+    const componentOptions = Array.isArray(parsedProfile.componentOptions) ? parsedProfile.componentOptions : fallback.componentOptions;
 
     return {
       branches: branches.sort((left, right) => {
@@ -97,6 +99,7 @@ function loadModelUiProfile() {
         return left.localeCompare(right);
       }),
       branchFamilies: branchFamilies.slice(),
+      componentOptions: componentOptions.slice(),
       eventTypes: eventTypes.slice(),
       commitActions: commitActions.slice(),
       commitScopes: commitScopes.slice(),
@@ -145,6 +148,53 @@ const MODEL_COLUMNS = [
   'hotfix_high_change',
   'main_push',
   'weekend_after_hours'
+];
+
+const TRAINING_DATASET_COLUMNS = [
+  'commit_hash',
+  'actor',
+  'branch',
+  'commit_message',
+  'event_type',
+  'files_changed',
+  'lines_added',
+  'lines_deleted',
+  'lines_changed',
+  'execution_time_seg',
+  'test_duration_sec',
+  'build_duration_sec',
+  'failed_job_name',
+  'failed_steps_count',
+  'log_category',
+  'dia_semana',
+  'hora_dia',
+  'is_weekend',
+  'is_hotfix_branch',
+  'is_feature_branch',
+  'is_main_branch',
+  'has_docker_change',
+  'has_db_change',
+  'has_api_change',
+  'has_frontend_change',
+  'has_login_change',
+  'has_dependency_change',
+  'has_env_change',
+  'has_migration_change',
+  'commit_action',
+  'commit_scope',
+  'risk_score_synthetic',
+  'status'
+];
+
+const COMPONENT_FLAG_COLUMNS = [
+  'has_docker_change',
+  'has_db_change',
+  'has_api_change',
+  'has_frontend_change',
+  'has_login_change',
+  'has_dependency_change',
+  'has_env_change',
+  'has_migration_change'
 ];
 
 function normalizeString(value, fallback = '') {
@@ -250,9 +300,25 @@ function inferEventType(payload = {}) {
 }
 
 function inferTemporalFields(payload = {}) {
+  const explicitDay = payload.dia_semana ?? payload.day_of_week;
+  const explicitHour = payload.hora_dia ?? payload.hour_of_day;
+
+  if (explicitDay !== undefined || explicitHour !== undefined) {
+    const dia_semana = Math.min(7, Math.max(1, toNumber(explicitDay, EARLY_FEATURE_DEFAULTS.dia_semana)));
+    const hora_dia = Math.min(23, Math.max(0, toNumber(explicitHour, EARLY_FEATURE_DEFAULTS.hora_dia)));
+    const explicitWeekend = payload.is_weekend;
+
+    return {
+      dia_semana,
+      hora_dia,
+      is_weekend: explicitWeekend !== undefined && explicitWeekend !== null ? toFlag(explicitWeekend) : (dia_semana >= 6 ? 1 : 0)
+    };
+  }
+
   const timestampSource = payload.timestamp || payload.created_at || payload.pushed_at || new Date().toISOString();
   const timestamp = new Date(timestampSource);
-  const dia_semana = Number.isNaN(timestamp.getTime()) ? EARLY_FEATURE_DEFAULTS.dia_semana : timestamp.getDay() + 1;
+  const jsDay = Number.isNaN(timestamp.getTime()) ? null : timestamp.getDay();
+  const dia_semana = jsDay === null ? EARLY_FEATURE_DEFAULTS.dia_semana : (jsDay === 0 ? 7 : jsDay);
   const hora_dia = Number.isNaN(timestamp.getTime()) ? EARLY_FEATURE_DEFAULTS.hora_dia : timestamp.getHours();
 
   return {
@@ -262,17 +328,25 @@ function inferTemporalFields(payload = {}) {
   };
 }
 
-function inferComponentFlags(commitMessage, commitScope) {
+function explicitComponentFlag(input, key, fallback) {
+  if (input && input[key] !== undefined && input[key] !== null) {
+    return toFlag(input[key]);
+  }
+
+  return fallback;
+}
+
+function inferComponentFlags(commitMessage, commitScope, input = {}) {
   const combined = `${normalizeString(commitMessage, '')} ${normalizeString(commitScope, '')}`.toLowerCase();
   return {
-    has_docker_change: combined.includes('docker') ? 1 : 0,
-    has_db_change: combined.includes('db') || combined.includes('database') ? 1 : 0,
-    has_api_change: combined.includes('api') ? 1 : 0,
-    has_frontend_change: combined.includes('frontend') || combined.includes('ui') || combined.includes('dashboard') ? 1 : 0,
-    has_login_change: combined.includes('login') || combined.includes('signin') || combined.includes('auth') ? 1 : 0,
-    has_dependency_change: combined.includes('dependency') || combined.includes('dependencies') || combined.includes('package') ? 1 : 0,
-    has_env_change: combined.includes('env') || combined.includes('environment') ? 1 : 0,
-    has_migration_change: combined.includes('migration') || combined.includes('migrate') ? 1 : 0
+    has_docker_change: explicitComponentFlag(input, 'has_docker_change', combined.includes('docker') ? 1 : 0),
+    has_db_change: explicitComponentFlag(input, 'has_db_change', combined.includes('db') || combined.includes('database') ? 1 : 0),
+    has_api_change: explicitComponentFlag(input, 'has_api_change', combined.includes('api') ? 1 : 0),
+    has_frontend_change: explicitComponentFlag(input, 'has_frontend_change', combined.includes('frontend') || combined.includes('ui') || combined.includes('dashboard') ? 1 : 0),
+    has_login_change: explicitComponentFlag(input, 'has_login_change', combined.includes('login') || combined.includes('signin') || combined.includes('auth') ? 1 : 0),
+    has_dependency_change: explicitComponentFlag(input, 'has_dependency_change', combined.includes('dependency') || combined.includes('dependencies') || combined.includes('package') ? 1 : 0),
+    has_env_change: explicitComponentFlag(input, 'has_env_change', combined.includes('env') || combined.includes('environment') ? 1 : 0),
+    has_migration_change: explicitComponentFlag(input, 'has_migration_change', combined.includes('migration') || combined.includes('migrate') ? 1 : 0)
   };
 }
 
@@ -284,16 +358,16 @@ function buildCatboostPayload(raw = {}) {
   const commit_scope = inferCommitScope({ ...raw, commit_message, branch });
   const temporal = inferTemporalFields(raw);
   const branchFlags = inferBranchFlags({ ...raw, branch });
-  const componentFlags = inferComponentFlags(commit_message, commit_scope);
+  const componentFlags = inferComponentFlags(commit_message, commit_scope, raw);
   const files_changed = Math.max(0, toNumber(raw.files_changed ?? raw.changed_files ?? raw.filesChanged, EARLY_FEATURE_DEFAULTS.files_changed));
   const lines_added = Math.max(0, toNumber(raw.lines_added ?? raw.additions, EARLY_FEATURE_DEFAULTS.lines_added));
   const lines_deleted = Math.max(0, toNumber(raw.lines_deleted ?? raw.deletions, EARLY_FEATURE_DEFAULTS.lines_deleted));
   const lines_changed = Math.max(0, toNumber(raw.lines_changed ?? raw.changes ?? raw.total_changes, lines_added + lines_deleted));
-  const after_hours = temporal.hora_dia < 8 || temporal.hora_dia >= 18 ? 1 : 0;
-  const work_hours = after_hours ? 0 : 1;
-  const high_change = lines_changed >= 250 ? 1 : 0;
-  const very_high_change = lines_changed >= 600 ? 1 : 0;
-  const many_files_changed = files_changed >= 8 ? 1 : 0;
+  const after_hours = temporal.hora_dia < 8 || temporal.hora_dia >= 20 ? 1 : 0;
+  const work_hours = temporal.hora_dia >= 9 && temporal.hora_dia <= 18 ? 1 : 0;
+  const high_change = lines_changed >= 300 ? 1 : 0;
+  const very_high_change = lines_changed >= 700 ? 1 : 0;
+  const many_files_changed = files_changed >= 10 ? 1 : 0;
   const critical_component_change = Math.max(
     componentFlags.has_docker_change,
     componentFlags.has_db_change,
@@ -304,8 +378,8 @@ function buildCatboostPayload(raw = {}) {
     componentFlags.has_env_change,
     componentFlags.has_migration_change
   );
-  const critical_high_change = critical_component_change && (high_change || very_high_change) ? 1 : 0;
-  const hotfix_high_change = branchFlags.is_hotfix_branch && (high_change || very_high_change) ? 1 : 0;
+  const critical_high_change = critical_component_change * high_change;
+  const hotfix_high_change = branchFlags.is_hotfix_branch * high_change;
   const main_push = branchFlags.is_main_branch && event_type === 'push' ? 1 : 0;
   const weekend_after_hours = temporal.is_weekend && after_hours ? 1 : 0;
   const lines_per_file = files_changed > 0 ? Number((lines_changed / files_changed).toFixed(4)) : 0;
@@ -357,7 +431,7 @@ function buildDeploymentRecord(raw = {}, prediction = null) {
   const commit_action = normalizeString(raw.commit_action, inferCommitAction(commit_message));
   const event_type = inferEventType(raw);
   const branch = normalizeString(raw.branch || raw.ref || raw.target_branch, EARLY_FEATURE_DEFAULTS.branch).replace(/^refs\/heads\//i, '');
-  const componentFlags = inferComponentFlags(commit_message, commit_scope);
+  const componentFlags = inferComponentFlags(commit_message, commit_scope, raw);
   const earlyPayload = buildCatboostPayload({ ...raw, commit_message, branch, commit_action, commit_scope, event_type, ...temporal });
 
   const errorLog = normalizeString(
@@ -414,12 +488,55 @@ function buildDeploymentRecord(raw = {}, prediction = null) {
   };
 }
 
+function buildTrainingDatasetRow(raw = {}) {
+  const record = buildDeploymentRecord(raw);
+
+  return {
+    commit_hash: record.commit,
+    actor: record.actor || '',
+    branch: record.branch,
+    commit_message: record.commit_message || '',
+    event_type: record.event_type,
+    files_changed: record.files_changed,
+    lines_added: record.lines_added,
+    lines_deleted: record.lines_deleted,
+    lines_changed: record.lines_changed,
+    execution_time_seg: record.execution_time_seg ?? '',
+    test_duration_sec: record.test_duration_sec ?? '',
+    build_duration_sec: record.build_duration_sec ?? '',
+    failed_job_name: record.failed_job_name || 'none',
+    failed_steps_count: record.failed_steps_count ?? 0,
+    log_category: record.log_category || (record.status === 'failure' ? 'runtime' : 'none'),
+    dia_semana: record.dia_semana,
+    hora_dia: record.hora_dia,
+    is_weekend: record.is_weekend,
+    is_hotfix_branch: record.is_hotfix_branch,
+    is_feature_branch: record.is_feature_branch,
+    is_main_branch: record.is_main_branch,
+    has_docker_change: record.has_docker_change,
+    has_db_change: record.has_db_change,
+    has_api_change: record.has_api_change,
+    has_frontend_change: record.has_frontend_change,
+    has_login_change: record.has_login_change,
+    has_dependency_change: record.has_dependency_change,
+    has_env_change: record.has_env_change,
+    has_migration_change: record.has_migration_change,
+    commit_action: record.commit_action,
+    commit_scope: record.commit_scope,
+    risk_score_synthetic: raw.risk_score_synthetic ?? '',
+    status: record.status
+  };
+}
+
 module.exports = {
   EARLY_FEATURE_DEFAULTS,
   MODEL_UI_PROFILE,
   MODEL_COLUMNS,
+  TRAINING_DATASET_COLUMNS,
+  COMPONENT_FLAG_COLUMNS,
   buildCatboostPayload,
   buildDeploymentRecord,
+  buildTrainingDatasetRow,
   inferCommitAction,
   inferCommitScope,
   inferEventType,

@@ -15,6 +15,16 @@
     "release",
     "ci"
   ],
+  "componentOptions": [
+    { "key": "has_docker_change", "label": "Docker" },
+    { "key": "has_db_change", "label": "Base de datos" },
+    { "key": "has_api_change", "label": "API" },
+    { "key": "has_frontend_change", "label": "Frontend" },
+    { "key": "has_login_change", "label": "Login/Auth" },
+    { "key": "has_dependency_change", "label": "Dependencias" },
+    { "key": "has_env_change", "label": "Entorno" },
+    { "key": "has_migration_change", "label": "Migraciones" }
+  ],
   "eventTypes": [
     "pull_request",
     "push"
