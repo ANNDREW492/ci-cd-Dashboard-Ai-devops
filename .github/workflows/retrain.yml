@@ -1,0 +1,235 @@
+name: Retrain CatBoost Risk Model
+
+on:
+  workflow_dispatch:
+    inputs:
+      dataset_mode:
+        description: Dataset source mode
+        required: false
+        default: automatic
+      allow_auto_promotion:
+        description: Upload new model as active when validation passes
+        required: false
+        default: "false"
+      min_new_records:
+        description: Minimum rows required to train
+        required: false
+        default: "30"
+      promotion_metric:
+        description: Metric used for promotion gate
+        required: false
+        default: f1
+      min_improvement:
+        description: Reserved for future active-model comparison
+        required: false
+        default: "0.01"
+  schedule:
+    - cron: "0 6 */3 * *"
+
+permissions:
+  contents: read
+
+jobs:
+  retrain:
+    name: Train and publish CatBoost model
+    runs-on: ubuntu-latest
+    env:
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      DATASET_KEY: datasets/latest.csv
+      MODEL_VERSION: catboost_${{ github.run_id }}
+      ALLOW_AUTO_PROMOTION: ${{ github.event.inputs.allow_auto_promotion || 'false' }}
+      MIN_NEW_RECORDS: ${{ github.event.inputs.min_new_records || '30' }}
+      PROMOTION_METRIC: ${{ github.event.inputs.promotion_metric || 'f1' }}
+      BACKEND_API_URL: ${{ secrets.BACKEND_API_URL }}
+      ML_WEBHOOK_TOKEN: ${{ secrets.ML_WEBHOOK_TOKEN }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Download latest dataset from S3
+        run: |
+          set -euo pipefail
+          aws s3 cp "s3://${S3_BUCKET}/${DATASET_KEY}" dataset.csv
+          test -s dataset.csv
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ML dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy scikit-learn catboost
+
+      - name: Train CatBoost model
+        run: |
+          python <<'PY'
+          import json
+          import os
+          import sys
+
+          import numpy as np
+          import pandas as pd
+          from catboost import CatBoostClassifier, Pool
+          from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+          from sklearn.model_selection import train_test_split
+
+          dataset_path = "dataset.csv"
+          min_rows = int(os.getenv("MIN_NEW_RECORDS", "30"))
+          threshold = 0.45
+
+          df = pd.read_csv(dataset_path)
+
+          required_base_columns = [
+              "branch", "event_type", "commit_action", "commit_scope",
+              "files_changed", "lines_added", "lines_deleted", "lines_changed",
+              "dia_semana", "hora_dia", "is_weekend",
+              "is_hotfix_branch", "is_feature_branch", "is_main_branch",
+              "has_docker_change", "has_db_change", "has_api_change", "has_frontend_change",
+              "has_login_change", "has_dependency_change", "has_env_change", "has_migration_change",
+              "status"
+          ]
+
+          for column in required_base_columns:
+              if column not in df.columns:
+                  if column == "status":
+                      raise SystemExit("Dataset does not contain required target column: status")
+                  df[column] = 0
+
+          text_columns = ["branch", "event_type", "commit_action", "commit_scope", "status"]
+          for column in text_columns:
+              df[column] = df[column].astype(str).str.strip().str.lower()
+
+          numeric_columns = [column for column in required_base_columns if column not in text_columns + ["status"]]
+          for column in numeric_columns:
+              df[column] = pd.to_numeric(df[column], errors="coerce").fillna(0)
+
+          df = df[df["status"].isin(["success", "failure"])].copy()
+          if len(df) < min_rows:
+              raise SystemExit(f"Not enough rows to train: {len(df)} < {min_rows}")
+
+          if df["status"].nunique() < 2:
+              raise SystemExit("Dataset needs both success and failure rows to train")
+
+          df["target"] = df["status"].map({"success": 0, "failure": 1})
+
+          df["lines_per_file"] = df["lines_changed"] / (df["files_changed"] + 1e-6)
+          df["lines_changed_log"] = np.log1p(df["lines_changed"])
+          df["files_changed_log"] = np.log1p(df["files_changed"])
+          df["after_hours"] = ((df["hora_dia"] < 8) | (df["hora_dia"] >= 20)).astype(int)
+          df["work_hours"] = ((df["hora_dia"] >= 9) & (df["hora_dia"] <= 18)).astype(int)
+          df["high_change"] = (df["lines_changed"] >= 300).astype(int)
+          df["very_high_change"] = (df["lines_changed"] >= 700).astype(int)
+          df["many_files_changed"] = (df["files_changed"] >= 10).astype(int)
+          df["critical_component_change"] = (
+              (df["has_docker_change"] == 1) |
+              (df["has_db_change"] == 1) |
+              (df["has_dependency_change"] == 1) |
+              (df["has_env_change"] == 1) |
+              (df["has_migration_change"] == 1) |
+              (df["has_login_change"] == 1) |
+              (df["has_api_change"] == 1)
+          ).astype(int)
+          df["critical_high_change"] = df["critical_component_change"] * df["high_change"]
+          df["hotfix_high_change"] = df["is_hotfix_branch"] * df["high_change"]
+          df["main_push"] = df["is_main_branch"] * (df["event_type"] == "push").astype(int)
+          df["weekend_after_hours"] = df["is_weekend"] * df["after_hours"]
+
+          training_columns = [
+              "branch", "event_type", "commit_action", "commit_scope",
+              "files_changed", "lines_added", "lines_deleted", "lines_changed",
+              "dia_semana", "hora_dia", "is_weekend",
+              "is_hotfix_branch", "is_feature_branch", "is_main_branch",
+              "has_docker_change", "has_db_change", "has_api_change", "has_frontend_change",
+              "has_login_change", "has_dependency_change", "has_env_change", "has_migration_change",
+              "lines_per_file", "lines_changed_log", "files_changed_log",
+              "after_hours", "work_hours", "high_change", "very_high_change", "many_files_changed",
+              "critical_component_change", "critical_high_change", "hotfix_high_change", "main_push", "weekend_after_hours"
+          ]
+          cat_features = ["branch", "event_type", "commit_action", "commit_scope"]
+
+          X = df[training_columns].copy()
+          y = df["target"].copy()
+
+          X_train, X_test, y_train, y_test = train_test_split(
+              X, y, test_size=0.2, random_state=42, stratify=y
+          )
+
+          train_pool = Pool(X_train, y_train, cat_features=cat_features)
+          test_pool = Pool(X_test, y_test, cat_features=cat_features)
+
+          model = CatBoostClassifier(
+              iterations=1500,
+              learning_rate=0.035,
+              depth=6,
+              l2_leaf_reg=5,
+              loss_function="Logloss",
+              eval_metric="AUC",
+              custom_metric=["F1", "Precision", "Recall", "AUC"],
+              random_seed=42,
+              verbose=100,
+              od_type="Iter",
+              od_wait=120,
+              bootstrap_type="Bayesian",
+              bagging_temperature=0.7,
+              random_strength=1.5
+          )
+
+          model.fit(train_pool, eval_set=test_pool, use_best_model=True)
+
+          probabilities = model.predict_proba(test_pool)[:, 1]
+          predictions = (probabilities >= threshold).astype(int)
+
+          metrics = {
+              "row_count": int(len(df)),
+              "accuracy": float(accuracy_score(y_test, predictions)),
+              "precision_fallo": float(precision_score(y_test, predictions, pos_label=1, zero_division=0)),
+              "recall_fallo": float(recall_score(y_test, predictions, pos_label=1, zero_division=0)),
+              "f1_fallo": float(f1_score(y_test, predictions, pos_label=1, zero_division=0)),
+              "auc_roc": float(roc_auc_score(y_test, probabilities)),
+              "threshold": threshold,
+              "training_columns": training_columns,
+              "cat_features": cat_features
+          }
+
+          model_path = f"{os.getenv('MODEL_VERSION', 'catboost_model')}.cbm"
+          metadata_path = f"{os.getenv('MODEL_VERSION', 'catboost_model')}_metadata.json"
+          model.save_model(model_path)
+
+          with open(metadata_path, "w", encoding="utf-8") as fh:
+              json.dump(metrics, fh, ensure_ascii=False, indent=2)
+
+          print(json.dumps(metrics, indent=2))
+          PY
+
+      - name: Upload versioned model to S3
+        run: |
+          set -euo pipefail
+          aws s3 cp "${MODEL_VERSION}.cbm" "s3://${S3_BUCKET}/models/${MODEL_VERSION}.cbm"
+          aws s3 cp "${MODEL_VERSION}_metadata.json" "s3://${S3_BUCKET}/models/${MODEL_VERSION}_metadata.json"
+
+      - name: Promote active model in S3
+        if: env.ALLOW_AUTO_PROMOTION == 'true'
+        run: |
+          set -euo pipefail
+          aws s3 cp "${MODEL_VERSION}.cbm" "s3://${S3_BUCKET}/models/catboost_active.cbm"
+          aws s3 cp "${MODEL_VERSION}_metadata.json" "s3://${S3_BUCKET}/models/catboost_active_metadata.json"
+
+      - name: Notify backend promotion
+        if: env.BACKEND_API_URL != '' && env.ML_WEBHOOK_TOKEN != ''
+        run: |
+          set -euo pipefail
+          curl -fsS -X POST "${BACKEND_API_URL}/api/ml/mark-promoted" \
+            -H "Content-Type: application/json" \
+            -H "x-ml-webhook-token: ${ML_WEBHOOK_TOKEN}" \
+            -d "{\"status\":\"completed\",\"promoted_version\":\"${MODEL_VERSION}\",\"run_url\":\"${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}"
