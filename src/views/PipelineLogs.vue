@@ -14,7 +14,7 @@ const getCommit = (log) => {
 };
 
 const getBranch = (log) => {
-  const refValue = log?.ref || '';
+  const refValue = log?.branch || log?.ref || '';
   return refValue ? refValue.replace('refs/heads/', '') : 'N/A';
 };
 

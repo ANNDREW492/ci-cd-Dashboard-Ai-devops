@@ -4,14 +4,9 @@
       <div class="icon-pulse"></div>
       <h3 class="titulo-panel">Indicador de Riesgo Operativo</h3>
     </div>
-    <p class="subtitle">CatBoost v3 usa solo señales tempranas del pipeline. No evalúa personas.</p>
+    <p class="subtitle">El modelo activo usa solo señales tempranas del pipeline. No evalúa personas.</p>
 
     <div class="formulario-grid">
-      <div class="form-group">
-        <label>Rama activa</label>
-        <div class="branch-display">{{ form.branch || 'Sin rama disponible' }}</div>
-      </div>
-
       <div class="form-group">
         <label>Tipo de evento</label>
         <select v-model="form.event_type" class="custom-select">
@@ -20,17 +15,18 @@
       </div>
 
       <div class="form-group">
-        <label>Acción del commit</label>
-        <select v-model="form.commit_action" class="custom-select">
-          <option v-for="action in commitActions" :key="action" :value="action">{{ action }}</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Alcance del commit</label>
-        <select v-model="form.commit_scope" class="custom-select">
-          <option v-for="scope in commitScopes" :key="scope" :value="scope">{{ scope }}</option>
-        </select>
+        <label>Familia de rama</label>
+        <div class="branch-toggle-grid" role="radiogroup" aria-label="Tipo de rama">
+          <button
+            v-for="option in branchTypeOptions"
+            :key="option.key"
+            type="button"
+            @click="selectBranchType(option.key)"
+            :class="['branch-toggle', selectedBranchType === option.key ? 'active' : '']"
+          >
+            {{ option.label }}
+          </button>
+        </div>
       </div>
 
       <div class="form-group slider-group">
@@ -55,14 +51,6 @@
       </div>
 
       <div class="form-group">
-        <label>Líneas añadidas / eliminadas</label>
-        <div class="split-inputs">
-          <input v-model.number="form.lines_added" type="number" min="0" class="custom-time" placeholder="Añadidas">
-          <input v-model.number="form.lines_deleted" type="number" min="0" class="custom-time" placeholder="Eliminadas">
-        </div>
-      </div>
-
-      <div class="form-group">
         <label>Día de despliegue</label>
         <div class="days-container">
           <button v-for="day in diasSemana" :key="day.value" @click="form.dia_semana = day.value" :class="['day-pill', form.dia_semana === day.value ? 'active' : '']">
@@ -76,18 +64,49 @@
         <input type="time" v-model="horaFormateada" class="custom-time">
       </div>
 
-      <div class="form-group">
-        <label>Familia de rama</label>
-        <div class="branch-toggle-grid" role="radiogroup" aria-label="Tipo de rama">
-          <button
-            v-for="option in branchTypeOptions"
-            :key="option.key"
-            type="button"
-            @click="selectBranchType(option.key)"
-            :class="['branch-toggle', selectedBranchType === option.key ? 'active' : '']"
-          >
-            {{ option.label }}
-          </button>
+      <div class="advanced-section">
+        <button type="button" class="advanced-toggle" @click="advancedOpen = !advancedOpen">
+          <span :class="['chevron', advancedOpen ? 'open' : '']">⌄</span>
+          <span>Parámetros avanzados</span>
+        </button>
+
+        <div v-if="advancedOpen" class="advanced-content">
+          <div class="form-group">
+            <label>Rama activa</label>
+            <div class="branch-display">{{ form.branch || 'Sin rama disponible' }}</div>
+          </div>
+
+          <div class="form-group">
+            <label>Alcance del commit</label>
+            <select v-model="form.commit_scope" class="custom-select">
+              <option v-for="scope in commitScopes" :key="scope" :value="scope">{{ scope }}</option>
+            </select>
+          </div>
+ 
+          <div class="form-group">
+            <label>Acción del commit</label>
+            <select v-model="form.commit_action" class="custom-select">
+              <option v-for="action in commitActions" :key="action" :value="action">{{ action }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Líneas añadidas / eliminadas</label>
+            <div class="split-inputs">
+              <input v-model.number="form.lines_added" type="number" min="0" class="custom-time" placeholder="Añadidas">
+              <input v-model.number="form.lines_deleted" type="number" min="0" class="custom-time" placeholder="Eliminadas">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Componentes afectados</label>
+            <div class="component-grid">
+              <label v-for="component in componentOptions" :key="component.key" class="component-toggle">
+                <input v-model="form[component.key]" type="checkbox">
+                <span>{{ component.label }}</span>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -111,7 +130,7 @@
         <div class="factores-analisis">
           <h5>Mensaje clave</h5>
           <ul>
-            <li>CatBoost v3 funciona como alerta temprana de despliegue.</li>
+            <li>El modelo activo funciona como alerta temprana de despliegue.</li>
             <li>El umbral operativo es 0.45.</li>
             <li>Si el servicio no responde, el deployment sigue guardado y la predicción queda como no disponible.</li>
           </ul>
@@ -131,6 +150,8 @@ const diasSemana = [
 ];
 
 const branches = ref([]);
+const branchFamilies = ref([]);
+const componentOptions = ref([]);
 const eventTypes = ref([]);
 const commitActions = ref([]);
 const commitScopes = ref([]);
@@ -163,9 +184,9 @@ const branchTypeOptions = computed(() => {
   }
 
   return options.sort((left, right) => {
-    const priority = { main: 0, hotfix: 1, feature: 2, release: 3, ci: 4 };
-    const leftPriority = priority[left.key] ?? 99;
-    const rightPriority = priority[right.key] ?? 99;
+    const priority = new Map(branchFamilies.value.map((family, index) => [family, index]));
+    const leftPriority = priority.has(left.key) ? priority.get(left.key) : 99;
+    const rightPriority = priority.has(right.key) ? priority.get(right.key) : 99;
 
     if (leftPriority !== rightPriority) {
       return leftPriority - rightPriority;
@@ -200,7 +221,15 @@ const form = ref({
   hora_dia: 0,
   is_hotfix_branch: false,
   is_feature_branch: false,
-  is_main_branch: false
+  is_main_branch: false,
+  has_docker_change: false,
+  has_db_change: false,
+  has_api_change: false,
+  has_frontend_change: false,
+  has_login_change: false,
+  has_dependency_change: false,
+  has_env_change: false,
+  has_migration_change: false
 });
 
 const selectedBranchType = ref(inferBranchFamily(form.value.branch));
@@ -224,11 +253,14 @@ const horaFormateada = computed({
 
 const resultado = ref(null);
 const cargando = ref(false);
+const advancedOpen = ref(false);
 
 onMounted(async () => {
   try {
     const options = await api.getMlOptions();
     if (Array.isArray(options.branches) && options.branches.length > 0) branches.value = options.branches;
+    if (Array.isArray(options.branchFamilies) && options.branchFamilies.length > 0) branchFamilies.value = options.branchFamilies;
+    if (Array.isArray(options.componentOptions) && options.componentOptions.length > 0) componentOptions.value = options.componentOptions;
     if (Array.isArray(options.eventTypes) && options.eventTypes.length > 0) eventTypes.value = options.eventTypes;
     if (Array.isArray(options.commitActions) && options.commitActions.length > 0) commitActions.value = options.commitActions;
     if (Array.isArray(options.commitScopes) && options.commitScopes.length > 0) commitScopes.value = options.commitScopes;
@@ -236,6 +268,12 @@ onMounted(async () => {
 
     if (options.defaults) {
       form.value = { ...form.value, ...options.defaults };
+    }
+
+    for (const component of componentOptions.value) {
+      if (form.value[component.key] === undefined) {
+        form.value[component.key] = false;
+      }
     }
 
     selectedBranchType.value = inferBranchFamily(form.value.branch);
@@ -259,7 +297,18 @@ const evaluarRiesgo = async () => {
   resultado.value = null;
 
   try {
-    resultado.value = await api.predictRisk(form.value);
+    const linesAdded = Number(form.value.lines_added || 0);
+    const linesDeleted = Number(form.value.lines_deleted || 0);
+    const explicitLinesChanged = Number(form.value.lines_changed || 0);
+    const payload = {
+      ...form.value,
+      lines_added: linesAdded,
+      lines_deleted: linesDeleted,
+      lines_changed: explicitLinesChanged > 0 ? explicitLinesChanged : linesAdded + linesDeleted,
+      is_weekend: form.value.dia_semana >= 6 ? 1 : 0
+    };
+
+    resultado.value = await api.predictRisk(payload);
   } catch (error) {
     console.error(error);
     alert('Error conectando con el servicio de predicción.');
@@ -328,6 +377,17 @@ label { font-size: 0.85rem; color: var(--color-text-main); font-weight: 600; dis
 .branch-toggle { border: 1px solid var(--color-border); background: #f8fafc; color: var(--color-text-muted); padding: 10px 8px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
 .branch-toggle:hover { border-color: var(--color-primary); color: var(--color-primary); }
 .branch-toggle.active { background: var(--color-primary); border-color: var(--color-primary); color: white; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+.advanced-section { border-top: 1px solid var(--color-border); padding-top: 4px; }
+.advanced-toggle { width: 100%; display: flex; align-items: center; gap: 8px; border: 0; background: transparent; color: var(--color-text-main); padding: 10px 0; font-size: 0.9rem; font-weight: 800; cursor: pointer; text-align: left; }
+.chevron { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 999px; background: #eff6ff; color: var(--color-primary); transition: transform 0.2s ease; }
+.chevron.open { transform: rotate(180deg); }
+.advanced-content { display: flex; flex-direction: column; gap: 18px; padding: 8px 0 0; }
+
+.component-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.component-toggle { display: flex; align-items: center; gap: 8px; border: 1px solid var(--color-border); background: #f8fafc; color: var(--color-text-muted); padding: 9px 10px; border-radius: 8px; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+.component-toggle input { accent-color: var(--color-primary); }
+.component-toggle:has(input:checked) { border-color: var(--color-primary); color: var(--color-primary); background: #eff6ff; }
 
 .btn-evaluar { background-color: var(--color-text-main); color: #ffffff; border: none; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: 0.2s; margin-top: 10px; display: flex; justify-content: center;}
 .btn-evaluar:hover:not(:disabled) { background-color: #1e293b; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }

@@ -131,8 +131,9 @@ const loadLogFromDatabase = async (id) => {
     commitHash.value = data.commit;
     branchName.value = data.branch;
     
-    if (data.errorLog) {
-      errorLog.value = data.errorLog;
+    const capturedLog = data.error_log || data.errorLog;
+    if (capturedLog) {
+      errorLog.value = capturedLog;
       await analyzeWithAI();
     } else {
       errorLog.value = "El pipeline falló, pero no se capturó texto de error en la base de datos para este despliegue. Posible fallo interno de GitHub Actions (ej. Set up job).";
