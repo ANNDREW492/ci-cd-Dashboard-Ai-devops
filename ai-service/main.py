@@ -10,6 +10,11 @@ from pydantic import BaseModel
 import pandas as pd
 from catboost import CatBoostClassifier
 
+try:
+    import boto3
+except Exception:
+    boto3 = None
+
 # Creación del app de FastAPI
 app = FastAPI(
     title="AI DevOps Microservice",
@@ -28,6 +33,7 @@ app.add_middleware(
 
 # Inicialización de OpenAI
 load_dotenv()
+SERVICE_DIR = os.path.dirname(os.path.abspath(__file__))
 try:
     client = OpenAI()
     ai_status = "Conectado a OpenAI"
@@ -36,22 +42,75 @@ except Exception as e:
     ai_status = "Desconectado (Falta API Key válida en .env)"
 
 # CARGA DEL MODELO MACHINE LEARNING
-# El servicio usa un único artefacto activo de CatBoost y la ruta puede sobrescribirse por variable de entorno.
-MODEL_PATH = os.getenv("CATBOOST_MODEL_PATH", "catboost_despliegues_v3.cbm")
+# local: usa un .cbm del servicio
+# s3: descarga models/catboost_active.cbm
+MODEL_SOURCE = os.getenv("MODEL_SOURCE", "local").strip().lower()
+LOCAL_MODEL_PATH = os.getenv("CATBOOST_MODEL_PATH", "catboost_despliegues_v3.cbm")
+MODEL_CACHE_PATH = os.getenv("MODEL_CACHE_PATH", "models/automatic/catboost_active.cbm")
+S3_BUCKET = os.getenv("S3_BUCKET", "")
+S3_MODEL_KEY = os.getenv("S3_MODEL_KEY", "models/catboost_active.cbm")
+AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 
 modelo_riesgo = None
 model_version = "unknown"
 ml_status = "Modelo no cargado"
-try:
-    if os.path.exists(MODEL_PATH):
-        modelo_riesgo = CatBoostClassifier()
-        modelo_riesgo.load_model(MODEL_PATH)
-        model_version = "catboost_active"
-        ml_status = f"Modelo CatBoost cargado desde: {MODEL_PATH}"
+active_model_path = None
+active_model_columns = None
+
+
+def service_path(path_value: str) -> str:
+    if os.path.isabs(path_value):
+        return path_value
+    return os.path.join(SERVICE_DIR, path_value)
+
+
+def resolve_model_path() -> str:
+    if MODEL_SOURCE == "s3":
+        if not S3_BUCKET:
+            raise RuntimeError("MODEL_SOURCE=s3 requiere S3_BUCKET")
+        if boto3 is None:
+            raise RuntimeError("MODEL_SOURCE=s3 requiere instalar boto3 en ai-service")
+
+        cache_path = service_path(MODEL_CACHE_PATH)
+        os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+        s3_client = boto3.client("s3", region_name=AWS_REGION)
+        s3_client.download_file(S3_BUCKET, S3_MODEL_KEY, cache_path)
+        return cache_path
+
+    return service_path(LOCAL_MODEL_PATH)
+
+
+def load_active_model(source: str | None = None) -> Dict[str, Any]:
+    global MODEL_SOURCE, modelo_riesgo, model_version, ml_status, active_model_path, active_model_columns
+
+    if source:
+        normalized_source = source.strip().lower()
+        if normalized_source not in {"local", "s3"}:
+            raise RuntimeError("model_source debe ser local o s3")
+        MODEL_SOURCE = normalized_source
+
+    active_model_path = resolve_model_path()
+    if os.path.exists(active_model_path):
+        loaded_model = CatBoostClassifier()
+        loaded_model.load_model(active_model_path)
+        modelo_riesgo = loaded_model
+        active_model_columns = modelo_riesgo.feature_names_ or None
+        model_version = f"{MODEL_SOURCE}:{os.path.basename(active_model_path)}"
+        ml_status = f"Modelo CatBoost activo ({MODEL_SOURCE}) cargado desde: {active_model_path}"
     else:
-        ml_status = f"Desconectado (No existe {MODEL_PATH})"
-except Exception as e:
-    ml_status = f"Error cargando modelo: {str(e)}"
+        modelo_riesgo = None
+        active_model_columns = None
+        model_version = "unknown"
+        ml_status = f"Desconectado (No existe {active_model_path})"
+
+    return {
+        "ml_status": ml_status,
+        "model_source": MODEL_SOURCE,
+        "model_path": active_model_path,
+        "model_version": model_version,
+        "model_features": active_model_columns or MODEL_COLUMNS
+    }
+
 
 MODEL_COLUMNS = [
     "branch",
@@ -91,6 +150,11 @@ MODEL_COLUMNS = [
     "weekend_after_hours",
 ]
 
+try:
+    load_active_model()
+except Exception as e:
+    ml_status = f"Error cargando modelo: {str(e)}"
+
 
 class LogAnalysisRequest(BaseModel):
     error_log: str
@@ -99,6 +163,10 @@ class LogAnalysisRequest(BaseModel):
 
 class RiskPredictionRequest(BaseModel):
     payload: Dict[str, Any]
+
+
+class ModelSourceRequest(BaseModel):
+    model_source: str
 
 
 def normalize_string(value: Any, fallback: str = "") -> str:
@@ -337,8 +405,21 @@ def check_health():
         "status": "ok", 
         "message": "Api IA funcionando correctamente.",
         "openai_status": ai_status,
-        "ml_status": ml_status
+        "ml_status": ml_status,
+        "model_source": MODEL_SOURCE,
+        "model_path": active_model_path,
+        "model_version": model_version,
+        "model_features": active_model_columns or MODEL_COLUMNS
     }
+
+
+@app.post("/api/model/source")
+def switch_model_source(request: ModelSourceRequest):
+    try:
+        return load_active_model(request.model_source)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"No se pudo activar el modelo {request.model_source}: {str(e)}")
+
 
 @app.post("/api/analyze-log")
 def analyze_log_with_llm(request: LogAnalysisRequest):
@@ -376,7 +457,8 @@ def predict_deployment_risk(request: Dict[str, Any]):
 
     try:
         features = build_model_features(request)
-        input_frame = pd.DataFrame([{column: features.get(column, 0) for column in MODEL_COLUMNS}])
+        model_columns = active_model_columns or MODEL_COLUMNS
+        input_frame = pd.DataFrame([{column: features.get(column, 0) for column in model_columns}])
 
         probability = float(modelo_riesgo.predict_proba(input_frame)[0][1])
         response = build_prediction_response(probability)

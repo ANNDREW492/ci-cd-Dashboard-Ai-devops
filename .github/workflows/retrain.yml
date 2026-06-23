@@ -23,6 +23,10 @@ on:
         description: Reserved for future active-model comparison
         required: false
         default: "0.01"
+      train_interval_days:
+        description: Operational retraining interval configured in the dashboard
+        required: false
+        default: "3"
   schedule:
     - cron: "0 6 */3 * *"
 
@@ -35,10 +39,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       S3_BUCKET: ${{ secrets.S3_BUCKET }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
       DATASET_KEY: datasets/latest.csv
       MODEL_VERSION: catboost_${{ github.run_id }}
       ALLOW_AUTO_PROMOTION: ${{ github.event.inputs.allow_auto_promotion || 'false' }}
+      TRAIN_INTERVAL_DAYS: ${{ github.event.inputs.train_interval_days || '3' }}
       MIN_NEW_RECORDS: ${{ github.event.inputs.min_new_records || '30' }}
       PROMOTION_METRIC: ${{ github.event.inputs.promotion_metric || 'f1' }}
       BACKEND_API_URL: ${{ secrets.BACKEND_API_URL }}
@@ -53,7 +58,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Download latest dataset from S3
         run: |

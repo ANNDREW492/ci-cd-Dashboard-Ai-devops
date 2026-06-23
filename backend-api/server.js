@@ -23,7 +23,7 @@ const MlConfig = require('./models/MlConfig');
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '15mb' }));
 
 connectDB();
 
@@ -46,6 +46,34 @@ function buildCsvContent(rows) {
   const header = TRAINING_DATASET_COLUMNS.join(',');
   const lines = rows.map((row) => TRAINING_DATASET_COLUMNS.map((column) => csvEscape(row[column])).join(','));
   return [header, ...lines].join('\n');
+}
+
+function sanitizeFileBaseName(value, fallback = `export_${Date.now()}`) {
+  const normalized = String(value || '')
+    .trim()
+    .replace(/\.csv$/i, '')
+    .replace(/[^a-zA-Z0-9._-]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+
+  return normalized || fallback;
+}
+
+function toCsvFileName(value, fallback) {
+  return `${sanitizeFileBaseName(value, fallback)}.csv`;
+}
+
+function countCsvRows(csvContent) {
+  const lines = String(csvContent || '')
+    .split(/\r?\n/)
+    .filter((line) => line.trim().length > 0);
+
+  return Math.max(0, lines.length - 1);
+}
+
+function ensureDirectory(dirPath) {
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
 }
 
 function getS3Config(cfg = null) {
@@ -92,18 +120,18 @@ function applyEnvironmentDefaults(cfg) {
     cfg.github = {};
   }
 
-  if (!cfg.storage.bucket && process.env.S3_BUCKET) {
+  if (process.env.S3_BUCKET) {
     cfg.storage.bucket = process.env.S3_BUCKET;
   }
 
-  if (!cfg.storage.region && process.env.AWS_REGION) {
+  if (process.env.AWS_REGION) {
     cfg.storage.region = process.env.AWS_REGION;
   }
 
-  if (!cfg.github.owner && process.env.GITHUB_OWNER) cfg.github.owner = process.env.GITHUB_OWNER;
-  if (!cfg.github.repo && process.env.GITHUB_REPO) cfg.github.repo = process.env.GITHUB_REPO;
-  if (!cfg.github.branch && process.env.GITHUB_BRANCH) cfg.github.branch = process.env.GITHUB_BRANCH;
-  if (!cfg.github.workflow_file && process.env.GITHUB_WORKFLOW_FILE) cfg.github.workflow_file = process.env.GITHUB_WORKFLOW_FILE;
+  if (process.env.GITHUB_OWNER) cfg.github.owner = process.env.GITHUB_OWNER;
+  if (process.env.GITHUB_REPO) cfg.github.repo = process.env.GITHUB_REPO;
+  if (process.env.GITHUB_BRANCH) cfg.github.branch = process.env.GITHUB_BRANCH;
+  if (process.env.GITHUB_WORKFLOW_FILE) cfg.github.workflow_file = process.env.GITHUB_WORKFLOW_FILE;
 }
 
 async function getOrCreateMlConfig() {
@@ -120,6 +148,8 @@ function mergeMlConfig(cfg, body = {}) {
   const allowedTopLevel = [
     'dataset_mode',
     'manual_dataset_path',
+    'dataset_export_name',
+    'active_model_mode',
     'enabled_auto_train',
     'train_interval_days',
     'min_new_records',
@@ -247,6 +277,71 @@ function authenticateToken(req, res, next) {
     req.user = user;
     next();
   });
+}
+
+async function dispatchTrainingWorkflow(cfg) {
+  const token = process.env.GH_PAT || process.env.GITHUB_TOKEN;
+
+  if (!token) {
+    const error = new Error('Falta GH_PAT o GITHUB_TOKEN en el entorno del backend');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const owner = cfg.github.owner;
+  const repo = cfg.github.repo;
+  const workflowFile = cfg.github.workflow_file;
+  const branch = cfg.github.branch;
+
+  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflowFile}/dispatches`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'X-GitHub-Api-Version': '2022-11-28'
+    },
+    body: JSON.stringify({
+      ref: branch,
+      inputs: {
+        dataset_mode: cfg.dataset_mode,
+        allow_auto_promotion: String(cfg.allow_auto_promotion),
+        train_interval_days: String(cfg.train_interval_days),
+        min_new_records: String(cfg.min_new_records),
+        promotion_metric: cfg.promotion_metric,
+        min_improvement: String(cfg.min_improvement)
+      }
+    })
+  });
+
+  if (!response.ok) {
+    const payload = await response.json().catch(() => ({}));
+    const error = new Error('GitHub workflow_dispatch falló');
+    error.statusCode = response.status;
+    error.detail = payload;
+    throw error;
+  }
+
+  return { owner, repo, workflow_file: workflowFile, branch };
+}
+
+async function syncAiModelSource(activeModelMode) {
+  const modelSource = activeModelMode === 'automatic' ? 's3' : 'local';
+  const response = await fetch(`${AI_SERVICE_URL}/api/model/source`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model_source: modelSource })
+  });
+
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error('No se pudo activar el modelo solicitado en AI service');
+    error.statusCode = response.status;
+    error.detail = payload;
+    throw error;
+  }
+
+  return payload;
 }
 
 app.post('/api/auth/login', (req, res) => {
@@ -401,10 +496,59 @@ app.post('/api/ml/config', authenticateToken, async (req, res) => {
     const cfg = await getOrCreateMlConfig();
     mergeMlConfig(cfg, body);
     await cfg.save();
-    res.json(cfg);
+    const responsePayload = cfg.toObject();
+
+    if (body.active_model_mode !== undefined) {
+      try {
+        responsePayload.model_sync = await syncAiModelSource(cfg.active_model_mode);
+      } catch (syncError) {
+        responsePayload.model_sync_error = syncError.detail || syncError.message;
+      }
+    }
+
+    res.json(responsePayload);
   } catch (error) {
     console.error('Error updating ml config:', error);
     res.status(500).json({ error: 'Error guardando configuración ML' });
+  }
+});
+
+app.post('/api/ml/manual-dataset', authenticateToken, async (req, res) => {
+  try {
+    const { filename, content } = req.body || {};
+    const csvContent = typeof content === 'string' ? content.trim() : '';
+
+    if (!csvContent) {
+      return res.status(400).json({ error: 'Debes subir un CSV con contenido' });
+    }
+
+    const firstLine = csvContent.split(/\r?\n/)[0] || '';
+    if (!firstLine.toLowerCase().includes('status')) {
+      return res.status(400).json({ error: 'El CSV debe incluir una columna status para entrenar el modelo' });
+    }
+
+    const uploadDir = path.join(__dirname, 'datasets', 'uploads');
+    ensureDirectory(uploadDir);
+
+    const safeFileName = toCsvFileName(filename, `manual_dataset_${Date.now()}`);
+    const filePath = path.join(uploadDir, safeFileName);
+    fs.writeFileSync(filePath, `${csvContent}\n`, 'utf8');
+
+    const cfg = await getOrCreateMlConfig();
+    cfg.dataset_mode = 'manual';
+    cfg.manual_dataset_path = path.relative(__dirname, filePath).replace(/\\/g, '/');
+    cfg.dataset_export_name = sanitizeFileBaseName(filename, cfg.dataset_export_name || 'manual_dataset');
+    await cfg.save();
+
+    res.json({
+      message: 'Dataset manual cargado',
+      file_name: safeFileName,
+      manual_dataset_path: cfg.manual_dataset_path,
+      row_count: countCsvRows(csvContent)
+    });
+  } catch (error) {
+    console.error('Error uploading manual dataset:', error);
+    res.status(500).json({ error: 'No se pudo cargar el dataset manual', detail: error.message });
   }
 });
 
@@ -412,21 +556,43 @@ app.post('/api/ml/config', authenticateToken, async (req, res) => {
 app.post('/api/ml/export', authenticateToken, async (req, res) => {
   try {
     const cfg = await getOrCreateMlConfig();
-    const onlyNew = req.body?.only_new ?? cfg.export_only_new ?? true;
-    const filter = onlyNew ? { exported: { $ne: true } } : {};
-
-    const rows = await Deployment.find(filter).sort({ timestamp: 1 }).lean().exec();
-
-    if (!rows || rows.length === 0) {
-      return res.status(200).json({ message: 'No hay registros para exportar', row_count: 0 });
-    }
-
+    const requestedName = req.body?.export_name || cfg.dataset_export_name;
+    const batchId = sanitizeFileBaseName(requestedName, `export_${Date.now()}`);
+    const csvFileName = `${batchId}.csv`;
     const tmpDir = path.join(__dirname, 'tmp');
-    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
-    const batchId = `export_${Date.now()}`;
-    const filePath = path.join(tmpDir, `${batchId}.csv`);
-    const datasetRows = rows.map((row) => buildTrainingDatasetRow(row));
-    const csvContent = buildCsvContent(datasetRows);
+    ensureDirectory(tmpDir);
+    const filePath = path.join(tmpDir, csvFileName);
+    let csvContent = '';
+    let rowCount = 0;
+    let rows = [];
+
+    if (cfg.dataset_mode === 'manual') {
+      if (!cfg.manual_dataset_path) {
+        return res.status(400).json({ error: 'No hay dataset manual cargado' });
+      }
+
+      const manualPath = path.resolve(__dirname, cfg.manual_dataset_path);
+      const allowedRoot = path.resolve(__dirname, 'datasets');
+      if (!manualPath.startsWith(allowedRoot) || !fs.existsSync(manualPath)) {
+        return res.status(400).json({ error: 'El dataset manual no existe o esta fuera de la carpeta permitida' });
+      }
+
+      csvContent = fs.readFileSync(manualPath, 'utf8');
+      rowCount = countCsvRows(csvContent);
+    } else {
+      const onlyNew = req.body?.only_new ?? cfg.export_only_new ?? true;
+      const filter = onlyNew ? { exported: { $ne: true } } : {};
+
+      rows = await Deployment.find(filter).sort({ timestamp: 1 }).lean().exec();
+
+      if (!rows || rows.length === 0) {
+        return res.status(200).json({ message: 'No hay registros para exportar', row_count: 0 });
+      }
+
+      const datasetRows = rows.map((row) => buildTrainingDatasetRow(row));
+      csvContent = buildCsvContent(datasetRows);
+      rowCount = rows.length;
+    }
 
     fs.writeFileSync(filePath, csvContent, 'utf8');
 
@@ -434,29 +600,33 @@ app.post('/api/ml/export', authenticateToken, async (req, res) => {
     const s3Config = getS3Config(cfg);
 
     if (isS3Configured(s3Config)) {
-      const key = `datasets/${batchId}.csv`;
+      const key = `datasets/${csvFileName}`;
       s3Url = await putObjectToS3({ key, body: csvContent, cfg });
       await putObjectToS3({ key: 'datasets/latest.csv', body: csvContent, cfg });
     }
 
-    await Deployment.updateMany(
-      { _id: { $in: rows.map((row) => row._id) } },
-      { $set: { exported: true, export_batch_id: batchId } }
-    );
+    if (cfg.dataset_mode !== 'manual') {
+      await Deployment.updateMany(
+        { _id: { $in: rows.map((row) => row._id) } },
+        { $set: { exported: true, export_batch_id: batchId } }
+      );
+    }
 
     cfg.last_exported_at = new Date();
     cfg.last_export_batch_id = batchId;
-    cfg.last_export_row_count = rows.length;
+    cfg.last_export_row_count = rowCount;
     cfg.last_export_s3_url = s3Url;
+    cfg.dataset_export_name = requestedName || cfg.dataset_export_name;
     await cfg.save();
 
     res.json({
       message: 'Export completo',
-      row_count: rows.length,
+      row_count: rowCount,
       file: filePath,
       s3: s3Url,
       s3_configured: isS3Configured(s3Config),
       batch_id: batchId,
+      csv_file_name: csvFileName,
       columns: TRAINING_DATASET_COLUMNS
     });
   } catch (error) {
@@ -495,49 +665,34 @@ app.post('/api/ml/s3/test', authenticateToken, async (req, res) => {
 app.post('/api/ml/trigger-train', authenticateToken, async (req, res) => {
   try {
     const cfg = await getOrCreateMlConfig();
-    const token = process.env.GH_PAT || process.env.GITHUB_TOKEN;
-
-    if (!token) {
-      return res.status(400).json({ error: 'Falta GH_PAT o GITHUB_TOKEN en el entorno del backend' });
-    }
-
-    const owner = req.body?.owner || cfg.github.owner;
-    const repo = req.body?.repo || cfg.github.repo;
-    const workflowFile = req.body?.workflow_file || cfg.github.workflow_file;
-    const branch = req.body?.branch || cfg.github.branch;
-
-    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflowFile}/dispatches`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/vnd.github+json',
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'X-GitHub-Api-Version': '2022-11-28'
-      },
-      body: JSON.stringify({
-        ref: branch,
-        inputs: {
-          dataset_mode: cfg.dataset_mode,
-          allow_auto_promotion: String(cfg.allow_auto_promotion),
-          min_new_records: String(cfg.min_new_records),
-          promotion_metric: cfg.promotion_metric,
-          min_improvement: String(cfg.min_improvement)
-        }
-      })
-    });
-
-    if (!response.ok) {
-      const payload = await response.json().catch(() => ({}));
-      return res.status(response.status).json({ error: 'GitHub workflow_dispatch falló', detail: payload });
-    }
+    const workflow = await dispatchTrainingWorkflow(cfg);
 
     cfg.last_training_status = 'dispatched';
+    cfg.last_training_dispatched_at = new Date();
     await cfg.save();
 
-    res.json({ message: 'Entrenamiento solicitado', owner, repo, workflow_file: workflowFile, branch });
+    res.json({ message: 'Entrenamiento solicitado', ...workflow });
   } catch (error) {
     console.error('Error triggering training:', error);
-    res.status(500).json({ error: 'No se pudo disparar el entrenamiento', detail: error.message });
+    res.status(error.statusCode || 500).json({
+      error: error.message || 'No se pudo disparar el entrenamiento',
+      detail: error.detail || error.message
+    });
+  }
+});
+
+app.get('/api/ml/model-status', authenticateToken, async (req, res) => {
+  try {
+    const aiResponse = await fetch(`${AI_SERVICE_URL}/`);
+    const payload = await aiResponse.json();
+
+    if (!aiResponse.ok) {
+      return res.status(aiResponse.status).json(payload);
+    }
+
+    res.json(payload);
+  } catch (error) {
+    res.status(502).json({ error: 'No se pudo consultar el estado del modelo activo', detail: error.message });
   }
 });
 
@@ -554,8 +709,19 @@ app.post('/api/ml/mark-promoted', authenticateAutomationOrJwt, async (req, res) 
       cfg.last_promoted_version = body.promoted_version;
     }
 
+    let modelSync = null;
+    if (cfg.active_model_mode === 'automatic') {
+      try {
+        modelSync = await syncAiModelSource('automatic');
+      } catch (syncError) {
+        cfg.last_training_status = 'completed_model_reload_failed';
+      }
+    }
+
     await cfg.save();
-    res.json(cfg);
+    const responsePayload = cfg.toObject();
+    if (modelSync) responsePayload.model_sync = modelSync;
+    res.json(responsePayload);
   } catch (error) {
     console.error('Error marking ML promotion:', error);
     res.status(500).json({ error: 'No se pudo registrar la promoción del modelo' });
@@ -683,7 +849,36 @@ app.get('/api/auth/verify', authenticateToken, (req, res) => {
   });
 });
 
+async function runScheduledTrainingCheck() {
+  try {
+    const cfg = await getOrCreateMlConfig();
+    if (!cfg.enabled_auto_train) {
+      return;
+    }
+
+    const intervalDays = Math.max(1, Number(cfg.train_interval_days || 3));
+    const lastDispatch = cfg.last_training_dispatched_at || cfg.last_trained_at;
+    const nextAllowedAt = lastDispatch
+      ? new Date(lastDispatch).getTime() + intervalDays * 24 * 60 * 60 * 1000
+      : 0;
+
+    if (Date.now() < nextAllowedAt) {
+      return;
+    }
+
+    await dispatchTrainingWorkflow(cfg);
+    cfg.last_training_status = 'scheduled_dispatched';
+    cfg.last_training_dispatched_at = new Date();
+    await cfg.save();
+    console.log(`Entrenamiento automatico solicitado cada ${intervalDays} dia(s)`);
+  } catch (error) {
+    console.warn('No se pudo ejecutar el chequeo de entrenamiento automatico:', error.message);
+  }
+}
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`API Backend ejecutándose en http://localhost:${PORT}`);
+  setTimeout(runScheduledTrainingCheck, 10000);
+  setInterval(runScheduledTrainingCheck, 60 * 60 * 1000);
 });

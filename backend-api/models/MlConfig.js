@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 
 const mlConfigSchema = new mongoose.Schema({
   dataset_mode: { type: String, enum: ['manual', 'automatic'], default: 'automatic' },
-  manual_dataset_path: { type: String, default: 'backend-api/dataset_telemetria_ci_cd_v3.csv' },
+  manual_dataset_path: { type: String, default: '' },
+  dataset_export_name: { type: String, default: '' },
+  active_model_mode: { type: String, enum: ['manual', 'automatic'], default: 'manual' },
   enabled_auto_train: { type: Boolean, default: false },
   train_interval_days: { type: Number, default: 3 },
   min_new_records: { type: Number, default: 30 },
@@ -25,6 +27,7 @@ const mlConfigSchema = new mongoose.Schema({
   last_export_batch_id: { type: String, default: null },
   last_export_row_count: { type: Number, default: 0 },
   last_export_s3_url: { type: String, default: null },
+  last_training_dispatched_at: { type: Date, default: null },
   last_trained_at: { type: Date, default: null },
   last_training_status: { type: String, default: null },
   last_training_run_url: { type: String, default: null },

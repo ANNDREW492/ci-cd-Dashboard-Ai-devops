@@ -34,7 +34,9 @@ __pycache__/
 *.py[cod]
 # Ignore CatBoost binary artifacts
 ai-service/*.cbm
+ai-service/models/automatic/
 
 # Generated exports and local credential downloads
 backend-api/tmp/
+backend-api/datasets/uploads/
 *_accessKeys.csv

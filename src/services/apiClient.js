@@ -188,6 +188,12 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  uploadManualDataset: (data) =>
+    apiCall('/api/ml/manual-dataset', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
   exportMlDataset: (data = {}) =>
     apiCall('/api/ml/export', {
       method: 'POST',
@@ -205,6 +211,8 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+
+  getModelStatus: () => apiCall('/api/ml/model-status'),
 };
 
 export default api;
