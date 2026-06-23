@@ -111,6 +111,92 @@ async function putObjectToS3({ key, body, contentType = 'text/csv', cfg = null }
   return `s3://${s3Config.bucket}/${key}`;
 }
 
+function buildS3Client(cfg = null) {
+  const s3Config = getS3Config(cfg);
+  if (!isS3Configured(s3Config)) {
+    return null;
+  }
+
+  return {
+    s3Config,
+    s3: new AWS.S3({
+      accessKeyId: s3Config.accessKeyId,
+      secretAccessKey: s3Config.secretAccessKey,
+      region: s3Config.region
+    })
+  };
+}
+
+async function s3ObjectExists(s3, bucket, key) {
+  try {
+    await s3.headObject({ Bucket: bucket, Key: key }).promise();
+    return true;
+  } catch (error) {
+    if (error.code === 'NotFound' || error.statusCode === 404) {
+      return false;
+    }
+    throw error;
+  }
+}
+
+async function findLatestVersionedModel(s3, bucket) {
+  const response = await s3.listObjectsV2({
+    Bucket: bucket,
+    Prefix: 'models/catboost_'
+  }).promise();
+
+  const candidates = (response.Contents || [])
+    .filter((item) => item.Key.endsWith('.cbm'))
+    .filter((item) => item.Key !== 'models/catboost_active.cbm')
+    .sort((left, right) => new Date(right.LastModified).getTime() - new Date(left.LastModified).getTime());
+
+  return candidates[0] || null;
+}
+
+async function ensureActiveModelInS3(cfg = null) {
+  const client = buildS3Client(cfg);
+  if (!client) {
+    throw new Error('S3 no configurado para promover modelo activo');
+  }
+
+  const { s3, s3Config } = client;
+  const activeModelKey = 'models/catboost_active.cbm';
+  const activeMetadataKey = 'models/catboost_active_metadata.json';
+
+  if (await s3ObjectExists(s3, s3Config.bucket, activeModelKey)) {
+    return { promoted: false, active_model_key: activeModelKey };
+  }
+
+  const latestModel = await findLatestVersionedModel(s3, s3Config.bucket);
+  if (!latestModel) {
+    throw new Error('No hay modelos versionados en S3 para promover como activo');
+  }
+
+  const latestMetadataKey = latestModel.Key.replace(/\.cbm$/i, '_metadata.json');
+  await s3.copyObject({
+    Bucket: s3Config.bucket,
+    CopySource: encodeURIComponent(`${s3Config.bucket}/${latestModel.Key}`),
+    Key: activeModelKey,
+    ContentType: 'application/octet-stream'
+  }).promise();
+
+  if (await s3ObjectExists(s3, s3Config.bucket, latestMetadataKey)) {
+    await s3.copyObject({
+      Bucket: s3Config.bucket,
+      CopySource: encodeURIComponent(`${s3Config.bucket}/${latestMetadataKey}`),
+      Key: activeMetadataKey,
+      ContentType: 'application/json'
+    }).promise();
+  }
+
+  return {
+    promoted: true,
+    source_model_key: latestModel.Key,
+    active_model_key: activeModelKey,
+    active_metadata_key: activeMetadataKey
+  };
+}
+
 function applyEnvironmentDefaults(cfg) {
   if (!cfg.storage) {
     cfg.storage = {};
@@ -325,8 +411,14 @@ async function dispatchTrainingWorkflow(cfg) {
   return { owner, repo, workflow_file: workflowFile, branch };
 }
 
-async function syncAiModelSource(activeModelMode) {
+async function syncAiModelSource(activeModelMode, cfg = null) {
   const modelSource = activeModelMode === 'automatic' ? 's3' : 'local';
+  let promotion = null;
+
+  if (modelSource === 's3') {
+    promotion = await ensureActiveModelInS3(cfg);
+  }
+
   const response = await fetch(`${AI_SERVICE_URL}/api/model/source`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -341,7 +433,7 @@ async function syncAiModelSource(activeModelMode) {
     throw error;
   }
 
-  return payload;
+  return { ...payload, promotion };
 }
 
 app.post('/api/auth/login', (req, res) => {
@@ -500,7 +592,7 @@ app.post('/api/ml/config', authenticateToken, async (req, res) => {
 
     if (body.active_model_mode !== undefined) {
       try {
-        responsePayload.model_sync = await syncAiModelSource(cfg.active_model_mode);
+        responsePayload.model_sync = await syncAiModelSource(cfg.active_model_mode, cfg);
       } catch (syncError) {
         responsePayload.model_sync_error = syncError.detail || syncError.message;
       }
@@ -616,7 +708,7 @@ app.post('/api/ml/export', authenticateToken, async (req, res) => {
     cfg.last_export_batch_id = batchId;
     cfg.last_export_row_count = rowCount;
     cfg.last_export_s3_url = s3Url;
-    cfg.dataset_export_name = requestedName || cfg.dataset_export_name;
+    cfg.dataset_export_name = '';
     await cfg.save();
 
     res.json({
@@ -712,7 +804,7 @@ app.post('/api/ml/mark-promoted', authenticateAutomationOrJwt, async (req, res) 
     let modelSync = null;
     if (cfg.active_model_mode === 'automatic') {
       try {
-        modelSync = await syncAiModelSource('automatic');
+        modelSync = await syncAiModelSource('automatic', cfg);
       } catch (syncError) {
         cfg.last_training_status = 'completed_model_reload_failed';
       }
@@ -876,9 +968,20 @@ async function runScheduledTrainingCheck() {
   }
 }
 
+async function runStartupModelSync() {
+  try {
+    const cfg = await getOrCreateMlConfig();
+    await syncAiModelSource(cfg.active_model_mode, cfg);
+    console.log(`Modelo activo sincronizado al iniciar: ${cfg.active_model_mode}`);
+  } catch (error) {
+    console.warn('No se pudo sincronizar el modelo activo al iniciar:', error.message);
+  }
+}
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`API Backend ejecutándose en http://localhost:${PORT}`);
+  setTimeout(runStartupModelSync, 5000);
   setTimeout(runScheduledTrainingCheck, 10000);
   setInterval(runScheduledTrainingCheck, 60 * 60 * 1000);
 });

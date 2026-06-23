@@ -68,7 +68,7 @@
         <div class="model-status">
           <span :class="['status-dot', modelStatus.model_source === 's3' ? 'auto' : 'manual']"></span>
           <div>
-            <strong>Modelo activo: {{ modelStatus.model_source === 's3' ? 'Automatico desde S3' : 'Manual/local' }}</strong>
+            <strong>Modelo actual activo: {{ modelStatus.model_source === 's3' ? 'Automatico desde S3' : 'Manual/local' }}</strong>
             <small>{{ modelStatus.model_version || modelStatus.ml_status || 'Sin estado disponible' }}</small>
           </div>
         </div>
@@ -91,9 +91,15 @@
               Automatico/S3
             </button>
           </div>
-          <p class="muted-note inline">Manual usa el modelo curado local. Automatico usa el ultimo modelo promovido en S3.</p>
+          <p class="muted-note inline">En automatico usa el ultimo modelo promovido en S3.</p>
         </div>
 
+        <div v-if="config.active_model_mode === 'manual'" class="manual-model-note">
+          <strong>Entrenamiento automatico en pausa</strong>
+          <span>El widget usara el modelo local cargado por el servicio de IA. Puedes seguir exportando datasets sin cambiar el modelo activo.</span>
+        </div>
+
+        <template v-else>
         <div class="field-row">
           <div class="field">
             <label>Reentrenar cada</label>
@@ -133,6 +139,7 @@
           <input v-model="config.allow_auto_promotion" type="checkbox">
           <span>Permitir promocion automatica si supera validacion</span>
         </label>
+        </template>
       </div>
 
       <div class="panel">
@@ -330,7 +337,7 @@ const exportDataset = async () => {
       export_name: config.dataset_export_name
     });
     await loadConfig({ clear: false });
-    message.value = `Dataset exportado: ${result.row_count} filas${result.s3 ? ` -> ${result.s3}` : ' (local)'}.`;
+    message.value = `Dataset exportado (${result.csv_file_name}): ${result.row_count} filas${result.s3 ? ` -> ${result.s3}` : ' (local)'}.`;
   } catch (err) {
     error.value = err.message;
   } finally {
@@ -374,12 +381,12 @@ onMounted(loadConfig);
 .title { margin: 0; font-size: 1.75rem; font-weight: 700; }
 .subtitle { margin: 4px 0 0; color: #64748b; }
 .settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-.panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; }
+.panel { background: #ffffff; border: 1px solid #d9d9e8; border-radius: 8px; padding: 20px; }
 .panel h3 { margin: 0 0 16px; font-size: 1rem; }
 .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
 .field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-label { font-size: 0.85rem; font-weight: 700; color: #475569; }
-input, select { border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; font-size: 0.92rem; background: #ffffff; box-sizing: border-box; width: 100%; }
+label { font-size: 0.85rem; font-weight: 700; color: #2c5998; }
+input, select { border: 1px solid #bbd2ef; border-radius: 6px; padding: 10px; font-size: 0.92rem; background: #ffffff; box-sizing: border-box; width: 100%; }
 .static-value { border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px; font-size: 0.92rem; background: #f8fafc; color: #0f172a; min-height: 41px; box-sizing: border-box; overflow-wrap: anywhere; }
 .static-value.compact { min-height: auto; padding: 8px 10px; font-size: 0.82rem; color: #475569; }
 .muted-note { margin: -4px 0 14px; color: #64748b; font-size: 0.82rem; line-height: 1.4; }
@@ -392,6 +399,9 @@ input, select { border: 1px solid #cbd5e1; border-radius: 6px; padding: 10px; fo
 .model-status { border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; padding: 12px; margin-bottom: 16px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; }
 .model-status strong { display: block; font-size: 0.92rem; color: #0f172a; }
 .model-status small { display: block; margin-top: 2px; color: #64748b; overflow-wrap: anywhere; }
+.manual-model-note { border: 1px solid #bbf7d0; background: #f0fdf4; color: #166534; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 4px; }
+.manual-model-note strong { font-size: 0.92rem; }
+.manual-model-note span { font-size: 0.82rem; line-height: 1.4; }
 .status-dot { width: 11px; height: 11px; border-radius: 999px; display: inline-block; }
 .status-dot.manual { background: #22c55e; box-shadow: 0 0 0 4px #dcfce7; }
 .status-dot.auto { background: #2563eb; box-shadow: 0 0 0 4px #dbeafe; }
