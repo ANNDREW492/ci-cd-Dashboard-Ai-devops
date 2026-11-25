@@ -120,7 +120,4 @@ npm run dev:all
 
 ---
 
-## Autor
 
-**Anndrew Daniel Bendezú Flores** — [@ANNDREW492](https://github.com/ANNDREW492)
-*Proyecto de Innovación Tecnológica · Ingeniería de Software con Inteligencia Artificial (2026)*
